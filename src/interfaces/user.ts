@@ -1,10 +1,13 @@
 export interface User {
-    id: string; 
-    name: string;
-    title: string;
-    email: string;
-    avatar: string;
-    bio: string;
-    linkedin: string;
-    role: string
-  }
+  id: string;
+  name: string;
+  title: string;
+  email: string;
+  avatar: string;
+  bio: string;
+  linkedin: string;
+  role: string;
+  team?: string;
+    image?: string;
+
+}

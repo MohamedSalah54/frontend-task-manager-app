@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import { checkAuth, logout } from "@/redux/authSlice";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,19 +13,25 @@ import { logoutUser } from "../lib/auth";
 import toast from "react-hot-toast";
 import { useAppSelector } from "@/hooks/redux";
 import { fetchProfile } from "@/redux/profileSlice";
-import { fetchNotifications, markNotificationAsRead,fetchAllNotifications  } from '@/redux/notificationSlice';
-import { Tooltip } from '@mui/material';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import {
+  fetchNotifications,
+  markNotificationAsRead,
+  fetchAllNotifications,
+  setNotifications,
+} from "@/redux/notificationSlice";
+import { Tooltip } from "@mui/material";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import socket from "@/lib/socket";
-import { Dialog } from '@mui/material';
-
+import { Dialog } from "@mui/material";
 
 export default function Navbar() {
   const [openDialog, setOpenDialog] = useState(false);
   const router = useRouter();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { profile } = useAppSelector((state) => state.profile);
-  const isAuthenticated = useAppSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useAppSelector(
+    (state: RootState) => state.auth.isAuthenticated
+  );
   const role = useAppSelector((state: RootState) => state.auth.user?.role);
 
   const [isAuthChecked, setIsAuthChecked] = useState(false);
@@ -34,7 +40,9 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isRoleLoaded, setIsRoleLoaded] = useState(false);
   const userId = useAppSelector((state) => state.auth.user?.id);
-  const notifications = useAppSelector((state) => state.notifications.notifications);
+  const notifications = useAppSelector(
+    (state) => state.notifications.notifications
+  );
   const loading = useAppSelector((state) => state.notifications.loading);
 
   const [openNotifications, setOpenNotifications] = useState(false);
@@ -50,33 +58,33 @@ export default function Navbar() {
     }
   }, []);
   useEffect(() => {
-    if (currentUser?.role === 'admin') {
-      dispatch(fetchAllNotifications()); 
+    if (currentUser?.role === "admin") {
+      dispatch(fetchAllNotifications());
     } else if (userId) {
-      dispatch(fetchNotifications(userId));  
+      dispatch(fetchNotifications(userId));
     }
   }, [dispatch, userId, currentUser]);
-  
+
   useEffect(() => {
     if (userId) {
-      socket.on('new_notification', (notification) => {
-        dispatch(setNotifications([notification, ...notifications])); 
+      socket.on("new_notification", (notification) => {
+        dispatch(setNotifications([notification, ...notifications]));
       });
-  
+
       return () => {
-        socket.off('new_notification'); 
+        socket.off("new_notification");
       };
     }
   }, [userId, dispatch, notifications]);
-  
+
   const handleToggleNotifications = () => {
     setOpenNotifications((prev) => !prev);
   };
-  
+
   const handleNotificationClick = (id: string) => {
     dispatch(markNotificationAsRead(id));
   };
-  
+
   const handleClickOutside = (event: MouseEvent) => {
     if (
       notificationAnchorRef.current &&
@@ -85,14 +93,13 @@ export default function Navbar() {
       setOpenNotifications(false);
     }
   };
-  
+
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
 
   useEffect(() => {
     const loadData = async () => {
@@ -108,10 +115,9 @@ export default function Navbar() {
         setIsRoleLoaded(true);
       }
     };
-  
+
     loadData();
   }, [dispatch]);
-  
 
   useEffect(() => {
     if (isAuthenticated && userId) {
@@ -133,7 +139,10 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -141,15 +150,12 @@ export default function Navbar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-
-
   const baseUrl = "http://localhost:3001";
   const imageUrl = profile?.profileImage
     ? profile.profileImage.startsWith("http")
       ? profile.profileImage.replace(/\\/g, "/")
       : `${baseUrl}/static/${profile.profileImage}`.replace(/\\/g, "/")
     : "";
-
 
   const isValidUrl = (url: string) => {
     try {
@@ -160,8 +166,7 @@ export default function Navbar() {
     }
   };
 
-  const canSeeTeam = role && (role === 'user' || role === 'team-lead');
-
+  const canSeeTeam = role && (role === "user" || role === "team-lead");
 
   return (
     <nav className="bg-blue-600 text-white shadow-md sticky top-0 z-50">
@@ -174,30 +179,42 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-6">
           {isAuthenticated ? (
             <>
-              <Link href="/tasks" className="hover:text-gray-200 transition">Tasks</Link>
+              <Link href="/tasks" className="hover:text-gray-200 transition">
+                Tasks
+              </Link>
 
               {canSeeTeam && (
-                <Link href="/teams" className="hover:text-gray-200 transition">Team</Link>
+                <Link href="/teams" className="hover:text-gray-200 transition">
+                  Team
+                </Link>
               )}
 
-              {currentUser?.role?.toLowerCase() === 'team-lead' ? (
-                <Link href="/dashboard" className="hover:text-gray-200 transition">
+              {currentUser?.role?.toLowerCase() === "team-lead" ? (
+                <Link
+                  href="/dashboard"
+                  className="hover:text-gray-200 transition"
+                >
                   Dashboard
                 </Link>
               ) : null}
 
-              {currentUser?.role?.toLowerCase() === 'admin' ? (
-                <Link href="/admin/dashboard" className="hover:text-gray-200 transition">
+              {currentUser?.role?.toLowerCase() === "admin" ? (
+                <Link
+                  href="/admin/dashboard"
+                  className="hover:text-gray-200 transition"
+                >
                   Dashboard
                 </Link>
               ) : null}
 
-              {currentUser?.role?.toLowerCase() === 'admin' ? (
-                <Link href="/admin/users" className="hover:text-gray-200 transition">
+              {currentUser?.role?.toLowerCase() === "admin" ? (
+                <Link
+                  href="/admin/users"
+                  className="hover:text-gray-200 transition"
+                >
                   Users
                 </Link>
               ) : null}
-
 
               {/* Notifications */}
               <div className="relative">
@@ -219,20 +236,31 @@ export default function Navbar() {
                   title={
                     <div className="max-h-72 overflow-y-auto p-3 bg-white text-black text-base">
                       {loading ? (
-                        <div className="text-center text-gray-500 py-4">Loading...</div>
+                        <div className="text-center text-gray-500 py-4">
+                          Loading...
+                        </div>
                       ) : notifications.length === 0 ? (
-                        <div className="text-center text-gray-500 py-4">No notifications</div>
+                        <div className="text-center text-gray-500 py-4">
+                          No notifications
+                        </div>
                       ) : (
                         notifications.map((notification) => (
                           <div
                             key={notification._id}
-                            onClick={() => handleNotificationClick(notification._id)}
-                            className={`px-3 py-2 cursor-pointer hover:bg-gray-100 rounded ${notification.isRead ? 'text-gray-500' : 'font-semibold'
-                              }`}
+                            onClick={() =>
+                              handleNotificationClick(notification._id)
+                            }
+                            className={`px-3 py-2 cursor-pointer hover:bg-gray-100 rounded ${
+                              notification.isRead
+                                ? "text-gray-500"
+                                : "font-semibold"
+                            }`}
                           >
                             {notification.message}
                             <div className="text-xs text-gray-400">
-                              {new Date(notification.createdAt).toLocaleString()}
+                              {new Date(
+                                notification.createdAt
+                              ).toLocaleString()}
                             </div>
                           </div>
                         ))
@@ -244,22 +272,24 @@ export default function Navbar() {
                   componentsProps={{
                     tooltip: {
                       sx: {
-                        backgroundColor: 'white',
-                        border: '2px solid #2563eb',
-                        color: 'black',
-                        boxShadow: 'none',
+                        backgroundColor: "white",
+                        border: "2px solid #2563eb",
+                        color: "black",
+                        boxShadow: "none",
                         width: 350,
                         padding: 0,
                       },
                     },
                     arrow: {
                       sx: {
-                        color: 'white',
+                        color: "white",
                       },
                     },
                   }}
-                />
-
+                >
+                  {/* children مهم عشان Tooltip */}
+                  <div />
+                </Tooltip>
               </div>
 
               {/* Profile */}
@@ -270,7 +300,13 @@ export default function Navbar() {
                 >
                   {profile?.profileImage && isValidUrl(imageUrl) ? (
                     <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
-                      <Image src={imageUrl} alt="Profile" width={40} height={40} className="object-cover" />
+                      <Image
+                        src={imageUrl}
+                        alt="Profile"
+                        width={40}
+                        height={40}
+                        className="object-cover"
+                      />
                     </div>
                   ) : (
                     <FaUserCircle className="text-2xl" />
@@ -279,7 +315,11 @@ export default function Navbar() {
 
                 {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg">
-                    <Link href="/profile" onClick={() => setIsDropdownOpen(false)} className="block px-4 py-2 hover:bg-gray-200">
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsDropdownOpen(false)}
+                      className="block px-4 py-2 hover:bg-gray-200"
+                    >
                       My Profile
                     </Link>
                     <button
@@ -294,15 +334,24 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/" className="hover:text-gray-200 transition">Feature</Link>
-              <Link href="/login" className="hover:text-gray-200 transition">Get Started</Link>
-              <Link href="/login" className="hover:text-gray-200 transition">Login</Link>
+              <Link href="/" className="hover:text-gray-200 transition">
+                Feature
+              </Link>
+              <Link href="/login" className="hover:text-gray-200 transition">
+                Get Started
+              </Link>
+              <Link href="/login" className="hover:text-gray-200 transition">
+                Login
+              </Link>
             </>
           )}
         </div>
 
         {/* Mobile menu button */}
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden focus:outline-none">
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden focus:outline-none"
+        >
           <FaBars className="text-2xl" />
         </button>
       </div>
@@ -312,13 +361,25 @@ export default function Navbar() {
         <div className="md:hidden bg-blue-700">
           {isAuthenticated ? (
             <>
-              <Link href="/tasks" className="block py-2 px-4 hover:bg-blue-800">Tasks</Link>
+              <Link href="/tasks" className="block py-2 px-4 hover:bg-blue-800">
+                Tasks
+              </Link>
 
               {canSeeTeam && (
-                <Link href="/teams" className="block py-2 px-4 hover:bg-blue-800">Team</Link>
+                <Link
+                  href="/teams"
+                  className="block py-2 px-4 hover:bg-blue-800"
+                >
+                  Team
+                </Link>
               )}
-              {currentUser?.role === 'team-lead' && (
-                <Link href="/dashboard" className="block py-2 px-4 hover:bg-blue-800">Dashboard</Link>
+              {currentUser?.role === "team-lead" && (
+                <Link
+                  href="/dashboard"
+                  className="block py-2 px-4 hover:bg-blue-800"
+                >
+                  Dashboard
+                </Link>
               )}
 
               {/* Notifications */}
@@ -336,7 +397,11 @@ export default function Navbar() {
               </Link>
 
               {/* Dialog in mobile */}
-              <Dialog fullScreen open={openDialog} onClose={() => setOpenDialog(false)}>
+              <Dialog
+                fullScreen
+                open={openDialog}
+                onClose={() => setOpenDialog(false)}
+              >
                 <div className="bg-white text-black h-full flex flex-col">
                   {/* Header */}
                   <div className="flex items-center justify-between px-4 py-2 border-b">
@@ -352,9 +417,13 @@ export default function Navbar() {
                   {/* Content */}
                   <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
                     {loading ? (
-                      <div className="text-center text-gray-500 py-4">Loading...</div>
+                      <div className="text-center text-gray-500 py-4">
+                        Loading...
+                      </div>
                     ) : notifications.length === 0 ? (
-                      <div className="text-center text-gray-500 py-4">No notifications</div>
+                      <div className="text-center text-gray-500 py-4">
+                        No notifications
+                      </div>
                     ) : (
                       notifications.map((notification) => (
                         <div
@@ -363,14 +432,21 @@ export default function Navbar() {
                             handleNotificationClick(notification._id);
                             setOpenDialog(false);
                           }}
-                          className={`p-3 cursor-pointer hover:bg-gray-100 rounded-md transition ${notification.isRead ? 'text-gray-500' : 'font-semibold'}`}
+                          className={`p-3 cursor-pointer hover:bg-gray-100 rounded-md transition ${
+                            notification.isRead
+                              ? "text-gray-500"
+                              : "font-semibold"
+                          }`}
                         >
                           <div>{notification.message}</div>
                           <div className="text-xs text-gray-400 mt-1">
-                            {new Date(notification.createdAt).toLocaleString(undefined, {
-                              dateStyle: 'medium',
-                              timeStyle: 'short',
-                            })}
+                            {new Date(notification.createdAt).toLocaleString(
+                              undefined,
+                              {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              }
+                            )}
                           </div>
                         </div>
                       ))
@@ -379,7 +455,12 @@ export default function Navbar() {
                 </div>
               </Dialog>
 
-              <Link href="/profile" className="block py-2 px-4 hover:bg-blue-800">My Profile</Link>
+              <Link
+                href="/profile"
+                className="block py-2 px-4 hover:bg-blue-800"
+              >
+                My Profile
+              </Link>
               <button
                 onClick={handleLogout}
                 className="block w-full text-left py-2 px-4 text-red-400 hover:text-red-600"
@@ -389,15 +470,22 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/" className="block py-2 px-4 hover:bg-blue-800">Feature</Link>
-              <Link href="/register" className="block py-2 px-4 hover:bg-blue-800">Get Started</Link>
-              <Link href="/login" className="block py-2 px-4 hover:bg-blue-800">Login</Link>
+              <Link href="/" className="block py-2 px-4 hover:bg-blue-800">
+                Feature
+              </Link>
+              <Link
+                href="/register"
+                className="block py-2 px-4 hover:bg-blue-800"
+              >
+                Get Started
+              </Link>
+              <Link href="/login" className="block py-2 px-4 hover:bg-blue-800">
+                Login
+              </Link>
             </>
           )}
         </div>
       )}
-
     </nav>
-
   );
 }

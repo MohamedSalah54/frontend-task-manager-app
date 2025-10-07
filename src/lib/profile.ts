@@ -43,7 +43,6 @@ export const updateUserProfile = async (
   });
   return response.data;
 };
-
 export const updateProfileForAdmin = async (
   userId: string,
   data: UpdateProfileDto & { profileImageFile?: File }
@@ -55,8 +54,6 @@ export const updateProfileForAdmin = async (
     if (data[key as keyof UpdateProfileDto]) {
       formData.append(key, data[key as keyof UpdateProfileDto] as string);
     }
-    console.log([...formData.entries()]);
-
   });
 
   if (data.profileImageFile) {
@@ -64,17 +61,21 @@ export const updateProfileForAdmin = async (
   }
 
   try {
-    await axios.patch(`${API_URL}/${userId}`, formData, {
+    const response = await axios.patch(`${API_URL}/${userId}`, formData, {
       withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data",
-        
       },
     });
 
     toast.success("Profile updated successfully!");
+    
+    return response.data as Profile;
+
   } catch (error) {
     toast.error("Something went wrong while updating.");
     console.error(error);
+    throw error;
   }
 };
+

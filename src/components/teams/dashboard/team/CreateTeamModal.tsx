@@ -3,7 +3,7 @@ import React, { useState, Fragment, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dialog, Transition } from '@headlessui/react';
 import { CreateTeamDto } from '../../../../interfaces/team';
-import { RootState } from '../../../../redux/store';
+import { AppDispatch, RootState } from '../../../../redux/store';
 import toast from 'react-hot-toast';
 import { addTeam, fetchTeams } from '../../../../redux/teamSlice';
 import { checkUserInTeam } from '../../../../lib/teams';
@@ -16,7 +16,7 @@ interface CreateTeamModalProps {
 }
 
 const CreateTeamModal: React.FC<CreateTeamModalProps> = ({ onClose }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

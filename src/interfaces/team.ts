@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface Member {
   position: ReactNode;
   _id: string;

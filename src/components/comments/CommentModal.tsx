@@ -8,13 +8,12 @@ import {
     Box,
     Button,
     Divider,
-    Slide
+    Slide,
+    SlideProps
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useEffect, useState, forwardRef } from "react";
+import React, { useEffect, useState, forwardRef, ReactElement } from "react";
 import { fetchCommentsByTask, createComment, updateComment, deleteComment } from "@/lib/comments";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import SaveIcon from "@mui/icons-material/Check";
 import { useAppSelector } from "@/hooks/redux";
 import { RootState } from "@/redux/store";
@@ -22,8 +21,11 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import toast from "react-hot-toast";
 
 
-const Transition = forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
+const Transition = forwardRef(function Transition(
+  props: SlideProps & { children: ReactElement },
+  ref
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 interface Props {

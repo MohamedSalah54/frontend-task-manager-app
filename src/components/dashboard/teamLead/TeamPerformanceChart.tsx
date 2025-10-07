@@ -38,12 +38,12 @@ const TeamPerformanceChart = () => {
           name: 'Completed',
           data: memberStats?.map((m) => m.completed) || [],
           color: 'blue', 
-        },
+        }as any,
         {
           name: 'Not Completed',
           data: memberStats?.map((m) => m.notCompleted) || [],
           color: 'orange',
-        },
+        }as any
       ]}
       width={600}
       height={300}

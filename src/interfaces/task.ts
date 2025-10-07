@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
+import { User } from "./user";
 
 export interface Task {
-    assignedTo: ReactNode;
+  assignedTo?: User | null; 
     _id: string;
     title: string;
     description: string;
     dueDate: string;
-    category?: string;
+    category: string;
     completed: boolean;
     id?: string;
     commentsCount: number;

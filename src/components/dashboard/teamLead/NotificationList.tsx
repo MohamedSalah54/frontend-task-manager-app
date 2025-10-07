@@ -39,7 +39,7 @@ const NotificationList = () => {
             <ListItem>
               <ListItemText
                 primary={notif.message}
-                secondary={new Date(notif.date).toLocaleString()} // استخدم date بدلاً من createdAt
+                secondary={new Date(notif.createdAt).toLocaleString()} // استخدم date بدلاً من createdAt
               />
             </ListItem>
             <Divider />

@@ -24,7 +24,7 @@ const CreateModal: React.FC<CreateModalProps> = ({ isOpen, handleCloseModal }) =
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const { user, error } = useAppSelector((state) => state.auth);  
+  const { user, error  } = useAppSelector((state) => state.auth);  
 
   useEffect(() => {
     if (user) {

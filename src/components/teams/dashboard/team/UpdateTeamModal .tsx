@@ -3,7 +3,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UpdateTeamDto, Team } from "@/interfaces/team";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import { editTeam, fetchTeams } from "@/redux/teamSlice";
 import toast from "react-hot-toast";
 import Tooltip from "@mui/material/Tooltip";
@@ -16,7 +16,7 @@ interface UpdateTeamModalProps {
 }
 
 const UpdateTeamModal: React.FC<UpdateTeamModalProps> = ({ team, onClose, onConfirm }) => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
     const { loading, error: teamError } = useSelector((state: RootState) => state.teams);
 
     const [name, setName] = useState(team.name);

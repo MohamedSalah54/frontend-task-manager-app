@@ -1,9 +1,7 @@
-'use client';
-import React from 'react';
-import {TaskListProps}from "@/interfaces/taskList";
-import TaskItem from './TaskItem';
-
-
+"use client";
+import React from "react";
+import { TaskListProps } from "@/interfaces/taskList";
+import TaskItem from "./TaskItem";
 
 const TaskList: React.FC<TaskListProps> = ({
   tasks,
@@ -12,6 +10,7 @@ const TaskList: React.FC<TaskListProps> = ({
   onEditTask,
   onDeleteTask,
   onToggleComplete,
+  currentUser,
 }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
@@ -26,6 +25,7 @@ const TaskList: React.FC<TaskListProps> = ({
           onEdit={() => onEditTask(task)}
           onDelete={() => onDeleteTask(task._id)}
           onToggleComplete={() => onToggleComplete(task)}
+          currentUser={currentUser!} 
         />
       ))}
     </div>

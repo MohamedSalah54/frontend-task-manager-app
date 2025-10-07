@@ -1,6 +1,7 @@
 import API from "./api";
 import toast from "react-hot-toast";
 import { Task, TaskCreateData, TaskUpdateData } from '@/interfaces/task';
+import axios from "axios";
 
 export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
@@ -59,7 +60,26 @@ export const fetchTasksTeam = async (): Promise<Task[]> => {
   }
 }
 
-export const fetchAllTasksForTeamLead = async (teamId) => {
+export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
+  try {
+    const response = await API.get(`/tasks`, {
+      params: { teamId }, // إرسال teamId للـ API
+      withCredentials: true,
+    });
+
+    if (!response.data) {
+      throw new Error("Failed to fetch tasks");
+    }
+
+    return response.data;
+  } catch (error: any) {
+    toast.error("Failed to fetch tasks");
+    throw error;
+  }
+};
+
+
+export const fetchAllTasksForTeamLead = async (teamId:string) => {
   try {
     const { data } = await API.get(`/tasks/team/all`, {
       params: { teamId },
@@ -120,9 +140,15 @@ export const createTaskForSelf = async (taskData: any) => {
       withCredentials: true,
     });
     return response.data;
-  } catch (error) {
-    throw error.response?.data || 'Something went wrong';
+  } catch (error: unknown) {
+  if (axios.isAxiosError(error) && error.response) {
+    throw error.response.data;
+  } else if (error instanceof Error) {
+    throw error.message;
+  } else {
+    throw 'Something went wrong';
   }
+}
 }
 
 export const fetchTasksWithTeamNameAndStatus = async (): Promise<any[]> => {
@@ -131,7 +157,13 @@ export const fetchTasksWithTeamNameAndStatus = async (): Promise<any[]> => {
       withCredentials: true,
     } ); 
     return response.data; 
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Error fetching tasks');
+  }  catch (error: unknown) {
+  if (axios.isAxiosError(error) && error.response?.data?.message) {
+    throw new Error(error.response.data.message);
+  } else if (error instanceof Error) {
+    throw error; 
+  } else {
+    throw new Error('Error fetching tasks');
   }
+}
 };

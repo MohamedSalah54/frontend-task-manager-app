@@ -3,7 +3,6 @@ interface State {
   user: {
     id: string | null;
     name: string | null;
-    // أي خصائص أخرى متعلقة بالمستخدم
   } | null;
 }
 
@@ -20,10 +19,9 @@ const accountReducer = (state = initialState, action: any): State => {
         token: action.payload,
       };
     case 'SET_USER_DATA':
-      console.log("User data being set in Reduxسسس:", action.payload);  // سجل البيانات التي تم إرسالها
       return {
         ...state,
-        user: action.payload,  // تأكد من أن الـ payload يحتوي على id
+        user: action.payload, 
       };
     default:
       return state;

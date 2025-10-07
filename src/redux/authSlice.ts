@@ -6,15 +6,18 @@ export interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
   user: User | null;
+    error: string | null; 
+
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   token: null,
   user: null,
+    error: null, 
+
 };
 
-// ✅ ده المهم: خليه Thunk
 export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, thunkAPI) => {
   const token = Cookies.get("token");
   const user = Cookies.get("user");

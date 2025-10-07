@@ -7,7 +7,6 @@ import {
     
 } from '../lib/notificationService';
 
-// تعريف الواجهة للإشعار
 interface Notification {
     _id: string;
     userId: string;
@@ -16,21 +15,18 @@ interface Notification {
     createdAt: string;
 }
 
-// تعريف الحالة الأولية
 interface NotificationState {
     notifications: Notification[];
     loading: boolean;
     error: string | null;
 }
 
-// الحالة الأولية
 const initialState: NotificationState = {
     notifications: [],
     loading: false,
     error: null,
 };
 
-// thunk جديد خاص بالادمن
 export const fetchAllNotifications = createAsyncThunk(
     'notifications/fetchAll',
     async (_, { rejectWithValue }) => {
@@ -44,7 +40,6 @@ export const fetchAllNotifications = createAsyncThunk(
   );
   
 
-// أكشن لجلب الإشعارات من الباك
 export const fetchNotifications = createAsyncThunk(
     'notifications/fetchNotifications',
     async (userId: string, { rejectWithValue }) => {
@@ -57,7 +52,6 @@ export const fetchNotifications = createAsyncThunk(
     }
 );
 
-// أكشن لعلامة الإشعار كمقروء
 export const markNotificationAsRead = createAsyncThunk(
     'notifications/markNotificationAsRead',
     async (id: string, { rejectWithValue }) => {
@@ -70,7 +64,6 @@ export const markNotificationAsRead = createAsyncThunk(
     }
 );
 
-// أكشن لتحديد كل الإشعارات كمقروءة
 export const markAllAsRead = createAsyncThunk(
     'notifications/markAllAsRead',
     async (userId: string, { rejectWithValue }) => {
@@ -84,15 +77,26 @@ export const markAllAsRead = createAsyncThunk(
 );
 
 // Slice
+
+
 const notificationSlice = createSlice({
     name: 'notifications',
     initialState,
     reducers: {
         setNotifications: (state, action: PayloadAction<Notification[]>) => {
-            state.notifications = action.payload;
+            state.notifications = action.payload.map(n => ({
+                _id: n._id,
+                userId: n.userId,
+                message: n.message,
+                isRead: n.isRead ?? false,
+                createdAt: n.createdAt,
+            }));
         },
         addNotification: (state, action: PayloadAction<Notification>) => {
-            state.notifications.unshift(action.payload); // إضافة الإشعار الجديد
+            state.notifications.unshift({
+                ...action.payload,
+                isRead: action.payload.isRead ?? false, // نتأكد من isRead
+            });
         },
     },
     extraReducers: (builder) => {
@@ -101,38 +105,26 @@ const notificationSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchNotifications.fulfilled, (state, action) => {
-                state.notifications = action.payload;
+            .addCase(fetchNotifications.fulfilled, (state, action: PayloadAction<Notification[]>) => {
                 state.loading = false;
+                state.notifications = action.payload.map(n => ({
+                    _id: n._id,
+                    userId: n.userId,
+                    message: n.message,
+                    isRead: n.isRead ?? false,
+                    createdAt: n.createdAt,
+                }));
             })
             .addCase(fetchNotifications.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })
-            .addCase(markNotificationAsRead.fulfilled, (state, action) => {
-                const notification = state.notifications.find(n => n._id === action.payload);
-                if (notification) {
-                    notification.isRead = true;
-                }
-            })
             .addCase(markAllAsRead.fulfilled, (state) => {
                 state.notifications = state.notifications.map(n => ({ ...n, isRead: true }));
-            })
-            .addCase(fetchAllNotifications.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-              })
-              .addCase(fetchAllNotifications.fulfilled, (state, action) => {
-                state.loading = false;
-                state.notifications = action.payload;
-              })
-              .addCase(fetchAllNotifications.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-              })
-              
+            });
     },
 });
+
 
 export const { setNotifications, addNotification } = notificationSlice.actions;
 

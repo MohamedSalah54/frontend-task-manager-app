@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { fetchTeams, removeTeam } from "../../redux/teamSlice";
-import { RootState } from "../../redux/store";
-import { Team } from "../../interfaces/team";
+import { editTeam, fetchTeams, removeTeam } from "../../redux/teamSlice";
+import { AppDispatch, RootState } from "../../redux/store";
+import { Team, UpdateTeamDto } from "../../interfaces/team";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import CreateTeamModal from "../../components/teams/dashboard/team/CreateTeamModal";
@@ -27,6 +27,7 @@ import {
   deleteTask,
   fetchAllTasksForTeamLead,
   fetchTasksTeam,
+  fetchTasksTeams,
   toggleTaskComplete,
 } from "@/lib/tasks";
 import { setTasks, updateTask } from "@/redux/taskSlice";
@@ -39,15 +40,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import UpdateTaskModal from "@/components/teams/dashboard/tasks/UpdateTaskModal";
-import { Task } from "@/interfaces/taskList";
+import { Task } from "@/interfaces/task";
 import DeleteTaskModal from "@/components/teams/dashboard/tasks/DeleteTaskModal";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import CommentsModal from "@/components/comments/CommentModal";
 import { FaUserCircle } from "react-icons/fa";
 
+interface ProfileImageWithFallbackProps {
+  src?: string; 
+  alt: string;
+}
+
 const TeamPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
   const { teams } = useAppSelector((state: RootState) => state.teams);
@@ -72,6 +78,11 @@ const TeamPage = () => {
   const [taskId, setTaskId] = useState<string | null>(null);
 
   const [selectedTaskForComments, setSelectedTaskForComments] = useState(null);
+  const [updateData, setUpdateData] = useState<UpdateTeamDto>({
+  name: "",
+  description: "",
+  members: []
+});
 
   const handleOpenComments = (task: any) => {
     setSelectedTaskForComments(task);
@@ -113,7 +124,7 @@ const TeamPage = () => {
     }
   };
 
-  const ProfileImageWithFallback = ({ src, alt }) => {
+  const ProfileImageWithFallback : React.FC<ProfileImageWithFallbackProps> = ({ src, alt }) => {
   const [error, setError] = useState(false);
 
   if (error || !src) {
@@ -125,7 +136,7 @@ const TeamPage = () => {
       src={src}
       alt={alt}
       className="w-10 h-10 rounded-full object-cover border mr-3"
-      onError={() => setError(true)} // لو الصورة فشلت في التحميل
+      onError={() => setError(true)} 
     />
   );
 };
@@ -162,7 +173,7 @@ const TeamPage = () => {
 
   const handleTaskCreated = () => {
     if (teamId) {
-      fetchTasksTeam(teamId)
+      fetchTasksTeams(teamId)
         .then((tasksData) => {
           dispatch(setTasks(tasksData));
         })
@@ -215,7 +226,7 @@ const TeamPage = () => {
   const handleUpdateTeam = async () => {
     try {
       await dispatch(
-        updateTeam({ id: teams[0]._id, data: updateData })
+        editTeam({ id: teams[0]._id, data: updateData })
       ).unwrap();
 
       setShowUpdateModal(false);

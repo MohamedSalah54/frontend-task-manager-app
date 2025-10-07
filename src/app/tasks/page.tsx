@@ -226,7 +226,7 @@ export default function TasksPage() {
             tasks={filteredTasks}
             tooltipVisibleId={tooltipVisibleId}
             setTooltipVisible={setTooltipVisibleId}
-            currentUser={currentUser}
+            currentUser={currentUser || undefined}
             onEditTask={(task) => {
               if (currentUser?.role !== 'user') {
                 setTaskToEdit(task);
