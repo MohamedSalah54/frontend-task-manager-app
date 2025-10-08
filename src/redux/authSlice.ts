@@ -1,33 +1,36 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
-import { User } from '../interfaces/user';
+import { User } from "../interfaces/user";
 
 export interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
   user: User | null;
-    error: string | null; 
-
+  error: string | null;
+  authChecked: boolean;
 }
 
 const initialState: AuthState = {
   isAuthenticated: false,
   token: null,
   user: null,
-    error: null, 
-
+  error: null,
+  authChecked: false,
 };
 
-export const checkAuth = createAsyncThunk("auth/checkAuth", async (_, thunkAPI) => {
-  const token = Cookies.get("token");
-  const user = Cookies.get("user");
+export const checkAuth = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, thunkAPI) => {
+    const token = Cookies.get("token");
+    const user = Cookies.get("user");
 
-  if (token && user) {
-    return { token, user: JSON.parse(user) };
-  } else {
-    throw new Error("Not authenticated");
+    if (token && user) {
+      return { token, user: JSON.parse(user) };
+    } else {
+      throw new Error("Not authenticated");
+    }
   }
-});
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -55,11 +58,15 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.token = action.payload.token;
       state.user = action.payload.user;
+        state.authChecked = true; 
+
     });
     builder.addCase(checkAuth.rejected, (state) => {
       state.isAuthenticated = false;
       state.token = null;
       state.user = null;
+        state.authChecked = true;
+
     });
   },
 });
