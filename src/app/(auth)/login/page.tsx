@@ -43,9 +43,7 @@ export default function Login() {
       dispatch(login({ token: data.token, user: data.user }));  
 
       toast.success('Login successful!');
-      setTimeout(() => {
-        router.push('/tasks');
-      }, 2000);
+
     } catch (err: any) {
       toast.error('Invalid email or password');
     } finally {
