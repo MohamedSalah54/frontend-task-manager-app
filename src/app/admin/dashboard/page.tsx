@@ -7,7 +7,7 @@ import { RootState } from '@/redux/store'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 
-const page = () => {
+const Page = () => {
   const currentUser = useAppSelector((state: RootState) => state.auth.user);
 
 
@@ -29,4 +29,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

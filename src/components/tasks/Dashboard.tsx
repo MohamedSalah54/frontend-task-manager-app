@@ -10,8 +10,8 @@ const Dashboard = () => {
   const pendingTasks = tasks.filter(task => !task.completed).length;
 
   const getCircleClass = (count: number, type: 'total' | 'completed' | 'pending') => {
-    let baseClass = 'flex items-center justify-center rounded-full text-white font-bold';
-    let sizeClass = count > 9 ? 'text-3xl' : 'text-2xl';
+    const baseClass = 'flex items-center justify-center rounded-full text-white font-bold';
+    const sizeClass = count > 9 ? 'text-3xl' : 'text-2xl';
     let colorClass = '';
     if (type === 'total') {
       colorClass = 'bg-blue-600';

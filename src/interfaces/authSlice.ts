@@ -2,11 +2,11 @@
     isAuthenticated: boolean;
     token: string | null;
     user:{
-      email:String,
-      name:String,
-      role:String,
-      id:String,
-      profileImage:String
+      email:string,
+      name:string,
+      role:string,
+      id:string,
+      profileImage:string
     } | null;
     error: string | null;
   }
