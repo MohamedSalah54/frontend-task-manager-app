@@ -75,9 +75,9 @@ export default function ProfilePage() {
     );
   }
 
-  // 🔹 توليد رابط الصورة بشكل صحيح
+const baseURL = API.defaults.baseURL || "";
 const profileImageUrl = profile.profileImage
-  ? `${API.replace(/\/$/, "")}/${profile.profileImage.replace(/^\/+/, "").replace(/\\/g, "/")}`
+  ? `${baseURL.replace(/\/$/, "")}/${profile.profileImage.replace(/^\/+/, "").replace(/\\/g, "/")}`
   : "";
 
 
