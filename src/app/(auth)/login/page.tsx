@@ -17,7 +17,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.replace('/tasks');
+      router.replace('/');
     } else {
       setIsLoading(false); 
     }
