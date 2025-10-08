@@ -80,9 +80,13 @@ export default function ProfilePage() {
 
 console.log("🧩 [FRONTEND] Profile image path from DB:", profile?.profileImage);
 
+// const profileImageUrl = profile?.profileImage
+//   ? `${API}/static/${profile.profileImage.replace(/\\/g, '/')}`
+//   : '';
 const profileImageUrl = profile?.profileImage
-  ? `${API}/static/${profile.profileImage.replace(/\\/g, '/')}`
+  ? `${API}${profile.profileImage.replace(/\\/g, '/')}`
   : '';
+
 
 console.log("🌍 [FRONTEND] Final image URL:", profileImageUrl);
 
