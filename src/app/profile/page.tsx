@@ -20,41 +20,38 @@ export default function ProfilePage() {
   const { profile, loading, error } = useAppSelector((state) => state.profile);
   const role = useAppSelector((state) => state.auth.user?.role);
   const userId = useAppSelector((state) => state.auth.user?.id);
+  const authChecked = useAppSelector((state) => state.auth.authChecked); // لو عندك flag للتحقق من auth
+
   const [editing, setEditing] = useState(false);
-  
 
-
-   
+  // 🟢 جلب البروفايل بعد التأكد من وجود userId
   useEffect(() => {
-    if (userId) {
-      dispatch(fetchProfile(userId));
-    }
-  }, [dispatch, userId]);
-  
+    if (!authChecked || !userId) return; // امنع request قبل انتهاء checkAuth أو بدون ID
+    dispatch(fetchProfile(userId));
+  }, [dispatch, userId, authChecked]);
+
   const handleUpdateProfile = async (data: UpdateProfileDto) => {
     if (!userId) {
       console.error("User ID is undefined!");
       return;
     }
-  
+
     try {
-      if (role === 'admin') {
+      if (role === "admin") {
         await dispatch(updateProfileForAdminThunk({ userId, data })).unwrap();
       } else {
         await dispatch(updateProfile({ userId, data })).unwrap();
       }
-  
-      // Fetch profile again to get updated data (like image)
+
+      // جلب البروفايل مرة أخرى بعد التحديث
       dispatch(fetchProfile(userId));
-  
       setEditing(false);
-    } catch (error) {
-      console.error('Failed to update profile:', error);
+    } catch (err) {
+      console.error("Failed to update profile:", err);
     }
   };
-  
-  
-  if (loading) {
+
+  if (!authChecked || loading) {
     return (
       <div className="flex items-center justify-center h-[60vh]">
         <div className="text-lg font-semibold text-gray-500">Loading...</div>
@@ -78,14 +75,11 @@ export default function ProfilePage() {
     );
   }
 
-console.log("🧩 [FRONTEND] Profile image path from DB:", profile?.profileImage);
+  // 🔹 توليد رابط الصورة بشكل صحيح
+const profileImageUrl = profile.profileImage
+  ? `${API.replace(/\/$/, "")}/${profile.profileImage.replace(/^\/+/, "").replace(/\\/g, "/")}`
+  : "";
 
-// const profileImageUrl = profile?.profileImage
-//   ? `${API}/static/${profile.profileImage.replace(/\\/g, '/')}`
-//   : '';
-const profileImageUrl = profile?.profileImage
-  ? `${API}${profile.profileImage.replace(/^\/+/, '').replace(/\\/g, '/')}`
-  : '';
 
 
 console.log("🌍 [FRONTEND] Final image URL:", profileImageUrl);
