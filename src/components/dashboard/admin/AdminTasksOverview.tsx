@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { User } from "@/interfaces/user";
+import API from "@/lib/api";
 
 const dashboardColors = {
   completed: "#4caf50",
@@ -114,10 +115,10 @@ const AdminTaskOverview = () => {
 
   const getImageUrl = (image: string) => {
     if (!image) {
-      return "http://localhost:3001/static/default-avatar.png";
+      return `${API}/static/default-avatar.png`;
     }
 
-    const baseUrl = "http://localhost:3001";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const imageUrl = image.startsWith("http")
       ? image.replace(/\\/g, "/")
       : `${baseUrl}/static/${image}`.replace(/\\/g, "/");

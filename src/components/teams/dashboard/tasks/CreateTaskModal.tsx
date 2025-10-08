@@ -9,7 +9,6 @@ import toast from "react-hot-toast";
 import { useAppSelector, useAppDispatch } from "@/hooks/redux";
 import { setTasks } from "@/redux/taskSlice";
 import { Task } from "@/interfaces/task";
-import { RootState } from "@/redux/store";
 
 interface Props {
   onClose: () => void;

@@ -55,7 +55,7 @@ export default function DataTable({ onSelect }: { onSelect: (ids: string[]) => v
       const completedTasks = user.tasks?.completedTasks || 0;
       const incompletedTasks = user.tasks?.incompleteTasks || 0;
 
-      const baseUrl = "http://localhost:3001"; 
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
       const imageUrl = user.image?.startsWith("http")
         ? user.image.replace(/\\/g, "/")
         : `${baseUrl}/static/${user.image}`.replace(/\\/g, "/");

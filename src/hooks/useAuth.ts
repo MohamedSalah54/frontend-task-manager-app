@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { logoutUser } from '../lib/auth';
+import API from '@/lib/api';
 
 const useAuth = () => {
   const router = useRouter();
@@ -10,15 +11,14 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch('http://localhost:3001/auth/me', {
+        const res = await fetch(`${API}/auth/me`, {
           method: 'GET',
-          credentials: 'include', // تأكد من إرسال الكوكيز مع الطلب
+          credentials: 'include', 
         });
 
         if (res.ok) {
           setIsAuthenticated(true);
         } else {
-          // إذا لم يكن التوكن صالحاً أو مفقوداً، نسجل الخروج
           await logoutUser();
           setIsAuthenticated(false);
         }

@@ -258,7 +258,7 @@ const TeamPage = () => {
     dispatch(fetchTeams()).then(() => setHasFetched(true));
   }, [dispatch, currentUser, router]);
 
-  const baseUrl = "http://localhost:3001";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const hasTeam = teams && teams.length > 0;
   const team = hasTeam ? teams[0] : null;
 

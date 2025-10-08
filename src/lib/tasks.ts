@@ -7,7 +7,7 @@ export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    const response = await API.get(endpoint, { withCredentials: true });  // إضافة withCredentials هنا
+    const response = await API.get(endpoint, { withCredentials: true });  
     const tasks: Task[] = response.data.map((task: Task) => ({
       ...task,
       id: task._id,
@@ -126,7 +126,7 @@ export const deleteTask = async (_id: string): Promise<any> => {
 
 export const getAllTasks = async () => {
   try {
-    const response = await API.get("http://localhost:3001/tasks/all", { withCredentials: true });
+    const response = await API.get(`${API}/tasks/all"`, { withCredentials: true });
     return response.data; 
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -136,7 +136,7 @@ export const getAllTasks = async () => {
 
 export const createTaskForSelf = async (taskData: any) => {
   try {
-    const response = await API.post(`http://localhost:3001/tasks/createTaskForSelf`, taskData, {
+    const response = await API.post(`${API}/tasks/createTaskForSelf`, taskData, {
       withCredentials: true,
     });
     return response.data;
@@ -153,7 +153,7 @@ export const createTaskForSelf = async (taskData: any) => {
 
 export const fetchTasksWithTeamNameAndStatus = async (): Promise<any[]> => {
   try {
-    const response = await API.get('http://localhost:3001/tasks/with-team-status', {
+    const response = await API.get(`${API}/tasks/with-team-status`, {
       withCredentials: true,
     } ); 
     return response.data; 

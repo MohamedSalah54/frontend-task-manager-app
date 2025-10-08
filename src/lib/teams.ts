@@ -2,12 +2,12 @@
 import axios from 'axios';
 import { Team, CreateTeamDto, UpdateTeamDto } from '@/interfaces/team';
 import toast from 'react-hot-toast';
+import API from './api';
 
-const API_URL = 'http://localhost:3001/teams';
 
 export const getMyTeam = async (): Promise<Team | null> => {
   try {
-    const response = await axios.get(`${API_URL}/my-team`, { withCredentials: true });
+    const response = await axios.get(`${API}teams/my-team`, { withCredentials: true });
 
 
     if (!response.data || response.data.message === 'No team found') {
@@ -24,7 +24,7 @@ export const getMyTeam = async (): Promise<Team | null> => {
 
 export const createTeam = async (data: CreateTeamDto): Promise<Team> => {
   try {
-    const response = await axios.post(`${API_URL}/create`, data, { withCredentials: true });
+    const response = await axios.post(`${API}/create`, data, { withCredentials: true });
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -48,7 +48,7 @@ export const updateTeam = async (id: string, data: UpdateTeamDto): Promise<Team>
   };
 
   try {
-    const response = await axios.put(`${API_URL}/${id}`, safeData, { withCredentials: true });
+    const response = await axios.put(`${API}/${id}`, safeData, { withCredentials: true });
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -64,7 +64,7 @@ export const updateTeam = async (id: string, data: UpdateTeamDto): Promise<Team>
 
 export const deleteTeam = async (id: string): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/${id}`, { withCredentials: true });
+    await axios.delete(`${API}/${id}`, { withCredentials: true });
     toast.success('Team deleted successfully!');
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -77,7 +77,7 @@ export const deleteTeam = async (id: string): Promise<void> => {
 
 export const checkUserInTeam = async (email: string): Promise<any> => {
   try {
-    const response = await axios.get(`${API_URL}/check-user`, { 
+    const response = await axios.get(`${API}/check-user`, { 
       params: { email },
       withCredentials: true 
     });
@@ -93,7 +93,7 @@ export const checkUserInTeam = async (email: string): Promise<any> => {
 
 export const getTeamMembers = async () => {
   try {
-    const res = await axios.get(`${API_URL}/my-members`, {
+    const res = await axios.get(`${API}/my-members`, {
       withCredentials: true,
     });
 
@@ -106,7 +106,7 @@ export const getTeamMembers = async () => {
 
 export const getAllTeams = async () => {
   try {
-    const response = await axios.get("http://localhost:3001/teams/all", { withCredentials: true });
+    const response = await axios.get(`${API}/teams/all`, { withCredentials: true });
     return response.data; 
   } catch (error) {
     console.error('Error fetching teams:', error);

@@ -13,6 +13,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import WorkIcon from '@mui/icons-material/Work';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import API from '@/lib/api';
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -80,7 +81,7 @@ export default function ProfilePage() {
 console.log("🧩 [FRONTEND] Profile image path from DB:", profile?.profileImage);
 
 const profileImageUrl = profile?.profileImage
-  ? `http://localhost:3001/static/${profile.profileImage.replace(/\\/g, '/')}`
+  ? `${API}/static/${profile.profileImage.replace(/\\/g, '/')}`
   : '';
 
 console.log("🌍 [FRONTEND] Final image URL:", profileImageUrl);

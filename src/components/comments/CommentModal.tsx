@@ -48,7 +48,7 @@ export default function CommentsModal({ open, onClose, task }: Props) {
 
 
 
-    const baseUrl = "http://localhost:3001";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const fetchComments = async () => {
         try {

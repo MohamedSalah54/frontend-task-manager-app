@@ -75,7 +75,7 @@ const DashboardPage = () => {
   };
 
   const getImageUrl = (image: string) => {
-    const baseUrl = "http://localhost:3001"; 
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
     return image?.startsWith("http")
       ? image.replace(/\\/g, "/")
       : `${baseUrl}/static/${image}`.replace(/\\/g, "/");
