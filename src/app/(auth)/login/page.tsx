@@ -53,7 +53,7 @@ export default function Login() {
     }
   };
 
-  if (isLoading) return null;
+  // if (isLoading) return null;
 
   return (
     <div className="relative min-h-screen bg-gray-100">

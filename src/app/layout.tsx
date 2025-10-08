@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import Providers from "@/providers";
+import AuthInitializer from "@/components/AuthInitializer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,8 @@ export default function RootLayout({
         <Providers>
           <Toaster position="top-center" reverseOrder={false} />
           <Navbar />
+                    <AuthInitializer />
+
           <main className="flex-grow">{children}</main>
           <Footer />
         </Providers>
