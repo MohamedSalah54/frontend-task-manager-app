@@ -55,36 +55,35 @@ export default function CreateTaskModal({
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form Data before submit:", formData);
-    try {
-      const taskData = {
-        ...formData,
-        teamId,
-      };
 
-      const creatorId = useAppSelector(
-        (state: RootState) => state.auth.user?.id
-      );
 
-      if (!creatorId) {
-        toast.error("You must be logged in to create a task.");
-        return;
-      }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("Form Data before submit:", formData);
 
-      await createTask(taskData, creatorId);
-      toast.success("Task created successfully!");
-      onClose();
+  try {
+    const taskData = {
+      ...formData,
+      teamId,
+    };
 
-      onTaskCreated?.();
-
-      const updatedTasks = await fetchAllTasksForTeamLead(teamId);
-      dispatch(setTasks(updatedTasks));
-    } catch (err) {
-      toast.error("Failed to create task.");
+    if (!creatorId) {
+      toast.error("You must be logged in to create a task.");
+      return;
     }
-  };
+
+    await createTask(taskData, creatorId);
+    toast.success("Task created successfully!");
+    onClose();
+
+    onTaskCreated?.();
+
+    const updatedTasks = await fetchAllTasksForTeamLead(teamId);
+    dispatch(setTasks(updatedTasks));
+  } catch (err) {
+    toast.error("Failed to create task.");
+  }
+};
 
   return (
     <Dialog open={true} onClose={onClose}>
