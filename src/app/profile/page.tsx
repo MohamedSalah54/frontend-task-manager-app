@@ -84,7 +84,7 @@ console.log("🧩 [FRONTEND] Profile image path from DB:", profile?.profileImage
 //   ? `${API}/static/${profile.profileImage.replace(/\\/g, '/')}`
 //   : '';
 const profileImageUrl = profile?.profileImage
-  ? `${API}${profile.profileImage.replace(/\\/g, '/')}`
+  ? `${API}${profile.profileImage.replace(/^\/+/, '').replace(/\\/g, '/')}`
   : '';
 
 
