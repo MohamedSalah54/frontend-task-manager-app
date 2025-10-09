@@ -10,6 +10,19 @@ const TaskForm: React.FC<TaskFormProps> = ({
   onSubmit,
   options,
 }) => {
+    const handleCategoryClick = (cat: string) => {
+    const normalized = cat.toLowerCase();
+    console.log("🟪 [UI] Category clicked:", normalized);
+    console.log("🟩 [FORM] taskData before change:", taskData);
+
+    // نحدّث الـ category داخل الفورم
+    onChange("category", normalized);
+
+    // نستخدم setTimeout عشان نتحقق من التحديث في الدورة الجاية
+    setTimeout(() => {
+      console.log("🟨 [FORM] taskData after change (check state update):", taskData);
+    }, 100);
+  };
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md mx-4">
@@ -60,37 +73,61 @@ const TaskForm: React.FC<TaskFormProps> = ({
               title="Date must be in the format YYYY-MM-DD"
             />
           </div>
-<div>
+{/* <div>
   <label className="block text-sm font-medium text-gray-700">
     Category
   </label>
   <div className="flex flex-wrap gap-2">
-    {options.map((cat) => (
-      <button
-        key={cat.name}
-        type="button"
-        onClick={() => {
-          const selected = cat.name.toLowerCase();
-          console.log("🟦 Selected Category Clicked:", selected);
-          console.log("🟩 taskData before change:", taskData);
-          onChange("category", selected);
-          setTimeout(() => {
-            console.log("🟨 taskData after change (check state update):", taskData);
-          }, 100);
-        }}
-        className={`flex items-center justify-center flex-1 p-2 border rounded-md transition-all
-          ${
-            taskData.category === cat.name.toLowerCase()
-              ? "bg-blue-600 text-white border-blue-600"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-          }`}
-      >
-        <span className="mr-2 text-lg">{cat.icon}</span>
-        {cat.name}
-      </button>
-    ))}
+{options.map((cat) => (
+  <button
+    key={cat.name}
+    type="button"
+    onClick={() => {
+      const selected = cat.name.toLowerCase();
+      console.log("🟦 Selected Category Clicked:", selected);
+      console.log("🟩 taskData before change:", taskData);
+      onChange("category", selected);
+      setTimeout(() => {
+        console.log("🟨 taskData after change (check state update):", taskData);
+      }, 100);
+    }}
+    className={`flex items-center justify-center flex-1 p-2 border rounded-md transition-all
+      ${
+        taskData.category === cat.name.toLowerCase()
+          ? "bg-blue-600 text-white border-blue-600"
+          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+      }`}
+  >
+    <span className="mr-2 text-lg">{cat.icon}</span>
+    {cat.name}
+  </button>
+))}
+
   </div>
-</div>
+</div> */}
+ <div>
+      <label className="block text-sm font-medium text-gray-700">
+        Category
+      </label>
+
+      <div className="flex flex-wrap gap-2">
+        {options.map((cat) => (
+          <button
+            key={cat.name}
+            type="button"
+            onClick={() => handleCategoryClick(cat.name)} // ← هنا استخدمناها
+            className={`flex items-center justify-center flex-1 p-2 border rounded-md transition-all ${
+              taskData.category === cat.name.toLowerCase()
+                ? "bg-blue-600 text-white border-blue-600"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+            }`}
+          >
+            <span className="mr-2 text-lg">{cat.icon}</span>
+            {cat.name}
+          </button>
+        ))}
+      </div>
+    </div>
 
 
           <div className="flex justify-end space-x-4 mt-4">

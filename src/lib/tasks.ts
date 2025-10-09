@@ -3,17 +3,39 @@ import toast from "react-hot-toast";
 import { Task, TaskCreateData, TaskUpdateData } from '@/interfaces/task';
 import axios from "axios";
 
+// export const getTasks = async (category: string = "all"): Promise<Task[]> => {
+//   try {
+//     const normalizedCategory = category.toLowerCase();
+//     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
+//     const response = await api.get(endpoint, { withCredentials: true }); 
+//     const tasks: Task[] = response.data.map((task: Task) => ({
+//       ...task,
+//       id: task._id,
+//     }));
+//     return tasks;
+//   } catch (error) {
+//     toast.error("Something went wrong");
+//     return [];
+//   }
+// };
 export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    const response = await api.get(endpoint, { withCredentials: true }); 
+    console.log(`🟨 [API] Fetching tasks from endpoint: ${endpoint}`);
+
+    const response = await api.get(endpoint, { withCredentials: true });
+    console.log("🟩 [API] Raw tasks from backend:", response.data);
+
     const tasks: Task[] = response.data.map((task: Task) => ({
       ...task,
       id: task._id,
     }));
+
+    console.log("🟦 [API] Normalized tasks array:", tasks);
     return tasks;
   } catch (error) {
+    console.error("🟥 [API] Error fetching tasks:", error);
     toast.error("Something went wrong");
     return [];
   }
@@ -129,14 +151,32 @@ export const getAllTasks = async () => {
   }
 };
 
+// export const createTaskForSelf = async (taskData: any) => {
+//   try {
+//     console.log("Sending taskData:", taskData);
+//     const response = await api.post(`/tasks/createTaskForSelf`, taskData);
+//     return response.data;
+//   } catch (error: unknown) {
+//     if (axios.isAxiosError(error) && error.response) {
+//       console.error("Error response:", error.response.data);
+//       throw error.response.data;
+//     } else if (error instanceof Error) {
+//       throw error.message;
+//     } else {
+//       throw "Something went wrong";
+//     }
+//   }
+// };
 export const createTaskForSelf = async (taskData: any) => {
   try {
-    console.log("Sending taskData:", taskData);
+    console.log("🟩 [API] Sending taskData to backend:", taskData);
     const response = await api.post(`/tasks/createTaskForSelf`, taskData);
+    console.log("🟦 [API] Response from backend (createTaskForSelf):", response.data);
     return response.data;
   } catch (error: unknown) {
+    console.error("🟥 [API] Error while creating task:", error);
     if (axios.isAxiosError(error) && error.response) {
-      console.error("Error response:", error.response.data);
+      console.error("🟥 [API] Error response data:", error.response.data);
       throw error.response.data;
     } else if (error instanceof Error) {
       throw error.message;
