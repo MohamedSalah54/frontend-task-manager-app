@@ -1,4 +1,4 @@
-import axios from '../lib/api';
+import api from './api';
 import { createUserSlice } from '../redux/createUserSlice'; 
 import { Dispatch } from 'redux'; 
 
@@ -6,7 +6,7 @@ export const createUser = (userData: { email: string; password: string; role: st
   try {
     dispatch(createUserSlice.actions.setLoading());
 
-    const response = await axios.post('/auth/create-user', userData, {
+    const response = await api.post('/auth/create-user', userData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('jwt')}`,
       },

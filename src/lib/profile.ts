@@ -1,14 +1,13 @@
 // lib/profile.ts
-import axios from "axios";
 import { Profile, UpdateProfileDto } from "@/interfaces/profile";
 import toast from "react-hot-toast";
-import API from "./api";
+import api from "./api";
 
 
 
 export const getMyProfile = async (userId: string): Promise<Profile> => {
   try {
-    const response = await axios.get(`${API}/profiles/${userId}`);
+    const response = await api.get(`/profiles/${userId}`);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -35,7 +34,7 @@ export const updateUserProfile = async (
     formData.append("profileImage", data.profileImageFile);
   }
 
-  const response = await axios.patch(`${API}/profiles/${userId}`, formData, {
+  const response = await api.patch(`/profiles/${userId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -60,7 +59,7 @@ export const updateProfileForAdmin = async (
   }
 
   try {
-    const response = await axios.patch(`${API}/profiles/${userId}`, formData, {
+    const response = await api.patch(`/profiles/${userId}`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

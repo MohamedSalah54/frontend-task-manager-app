@@ -1,13 +1,12 @@
-import API from "./api";
+import api from "./api";
 import toast from "react-hot-toast";
 import { Task, TaskCreateData, TaskUpdateData } from '@/interfaces/task';
 import axios from "axios";
-
 export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    const response = await API.get(endpoint);  
+    const response = await api.get(endpoint);  
     const tasks: Task[] = response.data.map((task: Task) => ({
       ...task,
       id: task._id,
@@ -28,7 +27,7 @@ export const createTask = async (taskData: TaskCreateData, creatorId: string): P
       assignedTo: taskData.assignedTo || creatorId,
     };
 
-    const response = await API.post("/tasks", newTaskData);
+    const response = await api.post("/tasks", newTaskData);
 
     if (!response.data || !response.data._id) {
       throw new Error("Failed to get task ID from response");
@@ -43,7 +42,7 @@ export const createTask = async (taskData: TaskCreateData, creatorId: string): P
 
 export const fetchTasksTeam = async (): Promise<Task[]> => {
   try {
-    const response = await API.get(`/tasks`);
+    const response = await api.get(`/tasks`);
 
     if (!response.data) {
       throw new Error("Failed to fetch tasks");
@@ -58,7 +57,7 @@ export const fetchTasksTeam = async (): Promise<Task[]> => {
 
 export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
   try {
-    const response = await API.get(`/tasks`, {
+    const response = await api.get(`/tasks`, {
       params: { teamId }, // إرسال teamId للـ API
     });
 
@@ -76,7 +75,7 @@ export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
 
 export const fetchAllTasksForTeamLead = async (teamId:string) => {
   try {
-    const { data } = await API.get(`/tasks/team/all`, {
+    const { data } = await api.get(`/tasks/team/all`, {
       params: { teamId }
     });
     return data;
@@ -89,7 +88,7 @@ export const fetchAllTasksForTeamLead = async (teamId:string) => {
 
 export const toggleTaskComplete = async (id: string): Promise<Task> => {
   try {
-    const response = await API.patch(`/tasks/${id}/toggle-complete`, {}, ); 
+    const response = await api.patch(`/tasks/${id}/toggle-complete`, {}, ); 
     return response.data;
   } catch (error) {
     toast.error("Failed to toggle task status");
@@ -99,7 +98,7 @@ export const toggleTaskComplete = async (id: string): Promise<Task> => {
 
 export const updateTask = async (_id: string, updatedData: TaskUpdateData): Promise<Task> => {
   try {
-    const response = await API.patch(`/tasks/${_id}`, updatedData, );  
+    const response = await api.patch(`/tasks/${_id}`, updatedData, );  
     return response.data;
   } catch (error: any) {
     toast.error("Failed to Update Task");
@@ -109,7 +108,7 @@ export const updateTask = async (_id: string, updatedData: TaskUpdateData): Prom
 
 export const deleteTask = async (_id: string): Promise<any> => {
   try {
-    const response = await API.delete(`/tasks/${_id}`); 
+    const response = await api.delete(`/tasks/${_id}`); 
     return response.data;
   } catch (error) {
     toast.error("Failed to Delete Task");
@@ -120,7 +119,7 @@ export const deleteTask = async (_id: string): Promise<any> => {
 
 export const getAllTasks = async () => {
   try {
-    const response = await API.get(`${API}/tasks/all"`);
+    const response = await api.get(`/tasks/all"`);
     return response.data; 
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -130,7 +129,7 @@ export const getAllTasks = async () => {
 
 export const createTaskForSelf = async (taskData: any) => {
   try {
-    const response = await API.post(`${API}/tasks/createTaskForSelf`, taskData);
+    const response = await api.post(`/tasks/createTaskForSelf`, taskData);
     return response.data;
   } catch (error: unknown) {
   if (axios.isAxiosError(error) && error.response) {
@@ -145,7 +144,7 @@ export const createTaskForSelf = async (taskData: any) => {
 
 export const fetchTasksWithTeamNameAndStatus = async (): Promise<any[]> => {
   try {
-    const response = await API.get(`${API}/tasks/with-team-status`); 
+    const response = await api.get(`/tasks/with-team-status`); 
     return response.data; 
   }  catch (error: unknown) {
   if (axios.isAxiosError(error) && error.response?.data?.message) {

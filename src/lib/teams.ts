@@ -2,12 +2,12 @@
 import axios from 'axios';
 import { Team, CreateTeamDto, UpdateTeamDto } from '@/interfaces/team';
 import toast from 'react-hot-toast';
-import API from './api';
+import api from './api';
 
 
 export const getMyTeam = async (): Promise<Team | null> => {
   try {
-    const response = await axios.get(`${API}teams/my-team`, );
+    const response = await api.get(`/teams/my-team`, );
 
 
     if (!response.data || response.data.message === 'No team found') {
@@ -24,7 +24,7 @@ export const getMyTeam = async (): Promise<Team | null> => {
 
 export const createTeam = async (data: CreateTeamDto): Promise<Team> => {
   try {
-    const response = await axios.post(`${API}/create`, data);
+    const response = await api.post(`/create`, data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -48,7 +48,7 @@ export const updateTeam = async (id: string, data: UpdateTeamDto): Promise<Team>
   };
 
   try {
-    const response = await axios.put(`${API}/${id}`, safeData);
+    const response = await api.put(`/${id}`, safeData);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -64,7 +64,7 @@ export const updateTeam = async (id: string, data: UpdateTeamDto): Promise<Team>
 
 export const deleteTeam = async (id: string): Promise<void> => {
   try {
-    await axios.delete(`${API}/${id}`);
+    await api.delete(`/${id}`);
     toast.success('Team deleted successfully!');
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -77,7 +77,7 @@ export const deleteTeam = async (id: string): Promise<void> => {
 
 export const checkUserInTeam = async (email: string): Promise<any> => {
   try {
-    const response = await axios.get(`${API}/check-user`, { 
+    const response = await api.get(`/check-user`, { 
       params: { email },
     });
     return response.data;  
@@ -92,7 +92,7 @@ export const checkUserInTeam = async (email: string): Promise<any> => {
 
 export const getTeamMembers = async () => {
   try {
-    const res = await axios.get(`${API}/my-members`, {
+    const res = await api.get(`/my-members`, {
     });
 
     return res.data.members;
@@ -104,7 +104,7 @@ export const getTeamMembers = async () => {
 
 export const getAllTeams = async () => {
   try {
-    const response = await axios.get(`${API}/teams/all`, );
+    const response = await api.get(`/teams/all`, );
     return response.data; 
   } catch (error) {
     console.error('Error fetching teams:', error);
