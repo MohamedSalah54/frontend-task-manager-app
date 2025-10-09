@@ -6,31 +6,25 @@ import axios from "axios";
 export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
-    const endpoint =
-      normalizedCategory === "all"
-        ? "/tasks"
-        : `/tasks?category=${normalizedCategory}`;
+    const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
+    console.log("📡 Fetching from:", endpoint);
+    const response = await api.get(endpoint);  
+    console.log("🧾 Raw API response:", response.data);
 
-    const response = await api.get(endpoint);
-
-    const tasks: Task[] = response.data.map((task: any) => ({
-      _id: task._id,
-      id: task._id, 
-      title: task.title,
-      description: task.description,
-      dueDate: task.dueDate,
-      category: task.category, 
-      completed: task.completed,
-      assignedTo: task.assignedTo,
+    const tasks: Task[] = response.data.map((task: Task) => ({
+      ...task,
+      id: task._id,
     }));
+    console.log("✅ Mapped tasks:", tasks);
 
-    console.log("🧩 Tasks from API:", tasks);
     return tasks;
   } catch (error) {
+    console.error("❌ Error in getTasks:", error);
     toast.error("Something went wrong");
     return [];
   }
 };
+
 
 
 export const createTask = async (taskData: TaskCreateData, creatorId: string): Promise<Task> => {

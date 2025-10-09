@@ -69,13 +69,14 @@ const TaskForm: React.FC<TaskFormProps> = ({
               {options.map((cat) => (
                 <button
                   key={cat.name}
+                  type="button"
                   onClick={() => onChange("category", cat.name.toLowerCase())}
                   className={`flex items-center justify-center flex-1 p-2 border rounded-md transition-all
-                    ${
-                      taskData.category === cat.name.toLowerCase()
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                    }`}
+    ${
+      taskData.category === cat.name.toLowerCase()
+        ? "bg-blue-600 text-white border-blue-600"
+        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+    }`}
                 >
                   <span className="mr-2 text-lg">{cat.icon}</span>
                   {cat.name}
