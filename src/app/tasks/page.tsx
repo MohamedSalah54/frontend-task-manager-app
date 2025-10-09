@@ -31,11 +31,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { useRouter } from 'next/navigation';
 
 export default function TasksPage() {
-    const router = useRouter();
-  
   const isAuthChecked = useAuth();
-    const { isAuthenticated, authChecked } = useAppSelector((state) => state.auth);
-
   const dispatch = useDispatch<AppDispatch>();
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
   console.log(tasks);
@@ -63,47 +59,21 @@ export default function TasksPage() {
     { name: 'Shopping', icon: '🛒' },
   ];
 
-  
-  // useEffect(() => {
-  //   const fetchTasks = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const fetchedTasks = await getTasksAPI(selectedCategory);
-  //       dispatch(setTasks(fetchedTasks));
-  //     } catch (error) {
-  //       toast.error('Failed to fetch tasks');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchTasks();
-  // }, [selectedCategory, dispatch]);
-   useEffect(() => {
-    if (!authChecked) return; // لم يتم التحقق بعد
-    if (!isAuthenticated) {
-      router.replace("/login"); // redirect آمن
-    }
-  }, [isAuthenticated, authChecked, router]);
-
-  // --- ✅ fetch tasks فقط بعد التأكد من auth ---
   useEffect(() => {
-    if (!authChecked || !isAuthenticated) return; // لا fetch قبل التأكد
-
     const fetchTasks = async () => {
       try {
         setLoading(true);
         const fetchedTasks = await getTasksAPI(selectedCategory);
         dispatch(setTasks(fetchedTasks));
       } catch (error) {
-        toast.error("Failed to fetch tasks");
+        toast.error('Failed to fetch tasks');
       } finally {
         setLoading(false);
       }
     };
 
     fetchTasks();
-  }, [selectedCategory, dispatch, isAuthenticated, authChecked]);
+  }, [selectedCategory, dispatch]);
 
   const handleFormChange = (field: keyof TaskFormData, value: string) => {
     setTaskFormData({ ...taskFormData, [field]: value });
