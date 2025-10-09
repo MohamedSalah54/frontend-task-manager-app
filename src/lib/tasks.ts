@@ -7,24 +7,17 @@ export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    console.log("📡 Fetching from:", endpoint);
-    const response = await api.get(endpoint);  
-    console.log("🧾 Raw API response:", response.data);
-
+    const response = await api.get(endpoint, { withCredentials: true }); 
     const tasks: Task[] = response.data.map((task: Task) => ({
       ...task,
       id: task._id,
     }));
-    console.log("✅ Mapped tasks:", tasks);
-
     return tasks;
   } catch (error) {
-    console.error("❌ Error in getTasks:", error);
     toast.error("Something went wrong");
     return [];
   }
 };
-
 
 
 export const createTask = async (taskData: TaskCreateData, creatorId: string): Promise<Task> => {
