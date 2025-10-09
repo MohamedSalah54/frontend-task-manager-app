@@ -23,6 +23,7 @@ import { Tooltip } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import socket from "@/lib/socket";
 import { Dialog } from "@mui/material";
+import API from "@/lib/api";
 
 export default function Navbar() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -150,12 +151,12 @@ export default function Navbar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  const imageUrl = profile?.profileImage
-    ? profile.profileImage.startsWith("http")
-      ? profile.profileImage.replace(/\\/g, "/")
-      : `${baseUrl}/static/${profile.profileImage}`.replace(/\\/g, "/")
-    : "";
+const baseURL = API.defaults.baseURL || "";
+const imageUrl = profile?.profileImage
+  ? `${baseURL.replace(/\/$/, "")}/${profile.profileImage
+      .replace(/^\/+/, "")
+      .replace(/\\/g, "/")}`
+  : "";
 
   const isValidUrl = (url: string) => {
     try {
