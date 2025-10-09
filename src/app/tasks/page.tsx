@@ -81,9 +81,14 @@ export default function TasksPage() {
     fetchTasks();
   }, [selectedCategory, dispatch]);
 
-  const handleFormChange = (field: keyof TaskFormData, value: string) => {
-    setTaskFormData({ ...taskFormData, [field]: value });
-  };
+const handleFormChange = (field: keyof TaskFormData, value: string) => {
+  setTaskFormData((prev) => {
+    const updated = { ...prev, [field]: value };
+    console.log("🟢 Updated taskFormData:", updated);
+    return updated;
+  });
+};
+
 
   const addTask = async () => {
     try {
