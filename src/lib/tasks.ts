@@ -129,18 +129,21 @@ export const getAllTasks = async () => {
 
 export const createTaskForSelf = async (taskData: any) => {
   try {
+    console.log("Sending taskData:", taskData);
     const response = await api.post(`/tasks/createTaskForSelf`, taskData);
     return response.data;
   } catch (error: unknown) {
-  if (axios.isAxiosError(error) && error.response) {
-    throw error.response.data;
-  } else if (error instanceof Error) {
-    throw error.message;
-  } else {
-    throw 'Something went wrong';
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("Error response:", error.response.data);
+      throw error.response.data;
+    } else if (error instanceof Error) {
+      throw error.message;
+    } else {
+      throw "Something went wrong";
+    }
   }
-}
-}
+};
+
 
 export const fetchTasksWithTeamNameAndStatus = async (): Promise<any[]> => {
   try {
