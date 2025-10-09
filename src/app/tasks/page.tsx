@@ -37,6 +37,11 @@ export default function TasksPage() {
   console.log(tasks);
   
   const currentUser = useAppSelector((state: RootState) => state.auth.user);
+useEffect(() => {
+  console.log("✅ Auth Check:", isAuthChecked);
+  console.log("✅ Current User:", currentUser);
+  console.log("✅ Token:", localStorage.getItem("token"));
+}, [isAuthChecked, currentUser]);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [showForm, setShowForm] = useState<boolean>(false);
