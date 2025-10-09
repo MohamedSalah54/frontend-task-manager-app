@@ -60,30 +60,38 @@ const TaskForm: React.FC<TaskFormProps> = ({
               title="Date must be in the format YYYY-MM-DD"
             />
           </div>
+<div>
+  <label className="block text-sm font-medium text-gray-700">
+    Category
+  </label>
+  <div className="flex flex-wrap gap-2">
+    {options.map((cat) => (
+      <button
+        key={cat.name}
+        type="button"
+        onClick={() => {
+          const selected = cat.name.toLowerCase();
+          console.log("🟦 Selected Category Clicked:", selected);
+          console.log("🟩 taskData before change:", taskData);
+          onChange("category", selected);
+          setTimeout(() => {
+            console.log("🟨 taskData after change (check state update):", taskData);
+          }, 100);
+        }}
+        className={`flex items-center justify-center flex-1 p-2 border rounded-md transition-all
+          ${
+            taskData.category === cat.name.toLowerCase()
+              ? "bg-blue-600 text-white border-blue-600"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          }`}
+      >
+        <span className="mr-2 text-lg">{cat.icon}</span>
+        {cat.name}
+      </button>
+    ))}
+  </div>
+</div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {options.map((cat) => (
-                <button
-                  key={cat.name}
-                  type="button"
-                  onClick={() => onChange("category", cat.name.toLowerCase())}
-                  className={`flex items-center justify-center flex-1 p-2 border rounded-md transition-all
-    ${
-      taskData.category === cat.name.toLowerCase()
-        ? "bg-blue-600 text-white border-blue-600"
-        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-    }`}
-                >
-                  <span className="mr-2 text-lg">{cat.icon}</span>
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <div className="flex justify-end space-x-4 mt-4">
             <button
