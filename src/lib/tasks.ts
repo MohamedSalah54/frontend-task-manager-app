@@ -7,7 +7,7 @@ export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    const response = await API.get(endpoint, { withCredentials: true });  
+    const response = await API.get(endpoint);  
     const tasks: Task[] = response.data.map((task: Task) => ({
       ...task,
       id: task._id,
@@ -28,9 +28,7 @@ export const createTask = async (taskData: TaskCreateData, creatorId: string): P
       assignedTo: taskData.assignedTo || creatorId,
     };
 
-    const response = await API.post("/tasks", newTaskData, {
-      withCredentials: true,  
-    });
+    const response = await API.post("/tasks", newTaskData);
 
     if (!response.data || !response.data._id) {
       throw new Error("Failed to get task ID from response");
@@ -45,9 +43,7 @@ export const createTask = async (taskData: TaskCreateData, creatorId: string): P
 
 export const fetchTasksTeam = async (): Promise<Task[]> => {
   try {
-    const response = await API.get(`/tasks`, {
-      withCredentials: true,
-    });
+    const response = await API.get(`/tasks`);
 
     if (!response.data) {
       throw new Error("Failed to fetch tasks");
@@ -64,7 +60,6 @@ export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
   try {
     const response = await API.get(`/tasks`, {
       params: { teamId }, // إرسال teamId للـ API
-      withCredentials: true,
     });
 
     if (!response.data) {
@@ -82,8 +77,7 @@ export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
 export const fetchAllTasksForTeamLead = async (teamId:string) => {
   try {
     const { data } = await API.get(`/tasks/team/all`, {
-      params: { teamId },
-      withCredentials: true,
+      params: { teamId }
     });
     return data;
   } catch (error) {
@@ -95,7 +89,7 @@ export const fetchAllTasksForTeamLead = async (teamId:string) => {
 
 export const toggleTaskComplete = async (id: string): Promise<Task> => {
   try {
-    const response = await API.patch(`/tasks/${id}/toggle-complete`, {}, { withCredentials: true }); 
+    const response = await API.patch(`/tasks/${id}/toggle-complete`, {}, ); 
     return response.data;
   } catch (error) {
     toast.error("Failed to toggle task status");
@@ -105,7 +99,7 @@ export const toggleTaskComplete = async (id: string): Promise<Task> => {
 
 export const updateTask = async (_id: string, updatedData: TaskUpdateData): Promise<Task> => {
   try {
-    const response = await API.patch(`/tasks/${_id}`, updatedData, { withCredentials: true });  
+    const response = await API.patch(`/tasks/${_id}`, updatedData, );  
     return response.data;
   } catch (error: any) {
     toast.error("Failed to Update Task");
@@ -115,7 +109,7 @@ export const updateTask = async (_id: string, updatedData: TaskUpdateData): Prom
 
 export const deleteTask = async (_id: string): Promise<any> => {
   try {
-    const response = await API.delete(`/tasks/${_id}`, { withCredentials: true }); 
+    const response = await API.delete(`/tasks/${_id}`); 
     return response.data;
   } catch (error) {
     toast.error("Failed to Delete Task");
@@ -126,7 +120,7 @@ export const deleteTask = async (_id: string): Promise<any> => {
 
 export const getAllTasks = async () => {
   try {
-    const response = await API.get(`${API}/tasks/all"`, { withCredentials: true });
+    const response = await API.get(`${API}/tasks/all"`);
     return response.data; 
   } catch (error) {
     console.error('Error fetching tasks:', error);
@@ -136,9 +130,7 @@ export const getAllTasks = async () => {
 
 export const createTaskForSelf = async (taskData: any) => {
   try {
-    const response = await API.post(`${API}/tasks/createTaskForSelf`, taskData, {
-      withCredentials: true,
-    });
+    const response = await API.post(`${API}/tasks/createTaskForSelf`, taskData);
     return response.data;
   } catch (error: unknown) {
   if (axios.isAxiosError(error) && error.response) {
@@ -153,9 +145,7 @@ export const createTaskForSelf = async (taskData: any) => {
 
 export const fetchTasksWithTeamNameAndStatus = async (): Promise<any[]> => {
   try {
-    const response = await API.get(`${API}/tasks/with-team-status`, {
-      withCredentials: true,
-    } ); 
+    const response = await API.get(`${API}/tasks/with-team-status`); 
     return response.data; 
   }  catch (error: unknown) {
   if (axios.isAxiosError(error) && error.response?.data?.message) {

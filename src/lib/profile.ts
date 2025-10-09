@@ -36,7 +36,6 @@ export const updateUserProfile = async (
   }
 
   const response = await axios.patch(`${API}/profiles/${userId}`, formData, {
-    withCredentials: true,
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -62,7 +61,6 @@ export const updateProfileForAdmin = async (
 
   try {
     const response = await axios.patch(`${API}/profiles/${userId}`, formData, {
-      withCredentials: true,
       headers: {
         "Content-Type": "multipart/form-data",
       },
