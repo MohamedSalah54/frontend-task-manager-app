@@ -2,21 +2,36 @@ import api from "./api";
 import toast from "react-hot-toast";
 import { Task, TaskCreateData, TaskUpdateData } from '@/interfaces/task';
 import axios from "axios";
+
 export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
-    const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    const response = await api.get(endpoint);  
-    const tasks: Task[] = response.data.map((task: Task) => ({
-      ...task,
-      id: task._id,
+    const endpoint =
+      normalizedCategory === "all"
+        ? "/tasks"
+        : `/tasks?category=${normalizedCategory}`;
+
+    const response = await api.get(endpoint);
+
+    const tasks: Task[] = response.data.map((task: any) => ({
+      _id: task._id,
+      id: task._id, 
+      title: task.title,
+      description: task.description,
+      dueDate: task.dueDate,
+      category: task.category, 
+      completed: task.completed,
+      assignedTo: task.assignedTo,
     }));
+
+    console.log("🧩 Tasks from API:", tasks);
     return tasks;
   } catch (error) {
     toast.error("Something went wrong");
     return [];
   }
 };
+
 
 export const createTask = async (taskData: TaskCreateData, creatorId: string): Promise<Task> => {
   try {
