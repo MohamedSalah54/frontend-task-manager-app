@@ -81,14 +81,9 @@ export default function TasksPage() {
     fetchTasks();
   }, [selectedCategory, dispatch]);
 
-const handleFormChange = (field: keyof TaskFormData, value: string) => {
-  setTaskFormData((prev) => {
-    const updated = { ...prev, [field]: value };
-    console.log("🟢 Updated taskFormData:", updated);
-    return updated;
-  });
-};
-
+  const handleFormChange = (field: keyof TaskFormData, value: string) => {
+    setTaskFormData({ ...taskFormData, [field]: value });
+  };
 
   const addTask = async () => {
     try {
@@ -160,22 +155,11 @@ const handleFormChange = (field: keyof TaskFormData, value: string) => {
   };
 
   const filteredTasks =
-    selectedCategory === "all"
+    selectedCategory === 'all'
       ? tasks
-      : tasks.filter((task) => {
-          console.log(
-            "🔍 Checking Task:",
-            task.title,
-            "Category:",
-            task.category
-          );
-          return (
-            task.category &&
-            task.category.toLowerCase() === selectedCategory.toLowerCase()
-          );
-        });
-
-  console.log("📋 Filtered Tasks:", filteredTasks);
+      : tasks.filter((task) => task.category === selectedCategory);
+      console.log('filterd:', filteredTasks);
+      
 
   return (
     <>
