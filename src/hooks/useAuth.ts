@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
 import { logoutUser } from '../lib/auth';
-import API from '@/lib/api';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const useAuth = () => {
   const router = useRouter();
@@ -11,12 +11,9 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API}/auth/me`, {
-          method: 'GET',
-          credentials: 'include', 
-        });
+        const res = await api.get('/auth/me',);
 
-        if (res.ok) {
+        if (res.status === 200) {
           setIsAuthenticated(true);
         } else {
           await logoutUser();
