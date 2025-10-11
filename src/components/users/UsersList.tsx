@@ -18,7 +18,8 @@ const columns: GridColDef[] = [
       const image = params.value;
       const name = params.row.name || "";
       const fallbackLetter = name.charAt(0).toUpperCase();
-  
+    
+    
       return (
         <Avatar
           src={image || undefined}
@@ -29,6 +30,7 @@ const columns: GridColDef[] = [
         </Avatar>
       );
     },
+    
   },
   
   { field: "name", headerName: "Name", minWidth: 150, flex: 1 },
@@ -48,17 +50,27 @@ export default function DataTable({ onSelect }: { onSelect: (ids: string[]) => v
 
   const { user: users, loading, error } = useSelector((state: RootState) => state.createUser);
 
-  console.log(users);
   const rows = Array.isArray(users)
-  ? users.map((user: any) => {
+  ? users.map((user: any, index: number) => {
+
       const allTasks = user.tasks?.allTasks || 0;
       const completedTasks = user.tasks?.completedTasks || 0;
       const incompletedTasks = user.tasks?.incompleteTasks || 0;
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
-      const imageUrl = user.image?.startsWith("http")
-        ? user.image.replace(/\\/g, "/")
-        : `${baseUrl}/static/${user.image}`.replace(/\\/g, "/");
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      const imageBefore = user.image || user.profileImage || "";
+      
+      let imageUrl = "";
+      if (imageBefore.startsWith("http")) {
+        imageUrl = imageBefore.replace(/\\/g, "/");
+      } else if (imageBefore.startsWith("/static/")) {
+        imageUrl = `${baseUrl}${imageBefore}`.replace(/\\/g, "/");
+      } else {
+        imageUrl = `${baseUrl}/static/${imageBefore}`.replace(/\\/g, "/");
+      }
+      
+      
 
       return {
         id: user._id,
@@ -74,6 +86,7 @@ export default function DataTable({ onSelect }: { onSelect: (ids: string[]) => v
       };
     })
   : [];
+
 
 
   const handleRowSelection = (

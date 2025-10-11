@@ -151,12 +151,18 @@ export default function Navbar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-const baseURL = API.defaults.baseURL || "";
-const imageUrl = profile?.profileImage
+  const baseURL = API.defaults.baseURL || "";
+  console.log("🔹 Base URL:", baseURL);
+  
+  const imageUrl = profile?.profileImage
   ? `${baseURL.replace(/\/$/, "")}/${profile.profileImage
       .replace(/^\/+/, "")
       .replace(/\\/g, "/")}`
   : "";
+
+
+  
+
 
   const isValidUrl = (url: string) => {
     try {
@@ -166,7 +172,9 @@ const imageUrl = profile?.profileImage
       return false;
     }
   };
-
+  console.log("🧩 Raw profile image from API:", profile?.profileImage);
+  console.log("🧠 Computed imageUrl:", imageUrl);
+  console.log("✅ isValidUrl(imageUrl):", isValidUrl(imageUrl));
   const canSeeTeam = role && (role === "user" || role === "team-lead");
 
   return (
@@ -299,19 +307,26 @@ const imageUrl = profile?.profileImage
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center space-x-2 focus:outline-none"
                 >
-                  {profile?.profileImage && isValidUrl(imageUrl) ? (
-                    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
-                      <Image
-                        src={imageUrl}
-                        alt="Profile"
-                        width={40}
-                        height={40}
-                        className="object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <FaUserCircle className="text-2xl" />
-                  )}
+                 {profile?.profileImage && isValidUrl(imageUrl) ? (
+  <>
+    {console.log("🖼️ Rendering profile image:", imageUrl)}
+    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+      <Image
+        src={imageUrl}
+        alt="Profile"
+        width={40}
+        height={40}
+        className="object-cover"
+      />
+    </div>
+  </>
+) : (
+  <>
+    {console.log("🚫 No valid image URL, rendering fallback icon")}
+    <FaUserCircle className="text-2xl" />
+  </>
+)}
+
                 </button>
 
                 {isDropdownOpen && (
