@@ -4,8 +4,28 @@ import {
   fetchTasksTeam as fetchTasksAPI,
   fetchAllTasksForTeamLead as fetchAllTasksAPI,
   getAllTasks,
+  getTasks,
 } from "@/lib/tasks";
 import { createTaskForSelf } from "@/lib/tasks";
+import api from "@/lib/api";
+
+export const fetchTasksByCategory = createAsyncThunk<Task[], string>(
+  "tasks/fetchByCategory",
+  async (category, { rejectWithValue }) => {
+    try {
+      const url =
+        category && category !== "all"
+          ? `${api}?category=${category}`
+          : `${api}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch tasks by category");
+      const data = await response.json();
+      return data;
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 export const createTask = createAsyncThunk(
   "tasks/createTaskForSelf",
@@ -72,6 +92,7 @@ interface TasksState {
   status: string;
   loading: boolean;
   error: string | null;
+  selectedCategory: string; // ✅ جديدة
 }
 
 const initialState: TasksState = {
@@ -79,6 +100,7 @@ const initialState: TasksState = {
   status: "idle",
   loading: false,
   error: null,
+  selectedCategory: "all", // ✅ جديدة
 };
 
 const tasksSlice = createSlice({
@@ -109,6 +131,10 @@ const tasksSlice = createSlice({
       if (index !== -1) {
         state.tasks[index].completed = !state.tasks[index].completed;
       }
+    },
+    setSelectedCategory(state, action: PayloadAction<string>) {
+      // ✅ جديدة
+      state.selectedCategory = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -165,10 +191,21 @@ const tasksSlice = createSlice({
       .addCase(fetchTasksWithTeamNameAndStatus.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
+      })
+      .addCase(fetchTasksByCategory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchTasksByCategory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = action.payload;
+      })
+      .addCase(fetchTasksByCategory.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setTasks, addTask, updateTask, deleteTask, toggleComplete } =
+export const { setTasks, addTask, updateTask, deleteTask, toggleComplete ,setSelectedCategory} =
   tasksSlice.actions;
 export default tasksSlice.reducer;

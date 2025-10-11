@@ -3,39 +3,43 @@ import toast from "react-hot-toast";
 import { Task, TaskCreateData, TaskUpdateData } from '@/interfaces/task';
 import axios from "axios";
 
-// export const getTasks = async (category: string = "all"): Promise<Task[]> => {
-//   try {
-//     const normalizedCategory = category.toLowerCase();
-//     const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-//     const response = await api.get(endpoint, { withCredentials: true }); 
-//     const tasks: Task[] = response.data.map((task: Task) => ({
-//       ...task,
-//       id: task._id,
-//     }));
-//     return tasks;
-//   } catch (error) {
-//     toast.error("Something went wrong");
-//     return [];
-//   }
-// };
 export const getTasks = async (category: string = "all"): Promise<Task[]> => {
   try {
     const normalizedCategory = category.toLowerCase();
-    const endpoint = normalizedCategory === "all" ? "/tasks" : `/tasks?category=${normalizedCategory}`;
-    console.log(`🟨 [API] Fetching tasks from endpoint: ${endpoint}`);
-
-    const response = await api.get(endpoint, { withCredentials: true });
-    console.log("🟩 [API] Raw tasks from backend:", response.data);
-
-    const tasks: Task[] = response.data.map((task: Task) => ({
+    let endpoint = "/tasks";
+    
+    // Add category parameter if it's not "all"
+    if (normalizedCategory !== "all") {
+      endpoint = `/tasks?category=${normalizedCategory}`;
+    }
+    
+    const response = await api.get(endpoint);
+    console.log("API Response:", response.data);
+    console.log("API Response type:", typeof response.data);
+    console.log("API Response is array:", Array.isArray(response.data));
+    
+    // Handle both array and object responses
+    let tasksData = response.data;
+    if (!Array.isArray(tasksData)) {
+      // If response.data is an object, try to find the tasks array
+      if (tasksData.tasks && Array.isArray(tasksData.tasks)) {
+        tasksData = tasksData.tasks;
+      } else if (tasksData.data && Array.isArray(tasksData.data)) {
+        tasksData = tasksData.data;
+      } else {
+        console.warn("Unexpected API response format:", tasksData);
+        return [];
+      }
+    }
+    
+    const tasks: Task[] = tasksData.map((task: Task) => ({
       ...task,
       id: task._id,
     }));
-
-    console.log("🟦 [API] Normalized tasks array:", tasks);
+    console.log("Processed tasks:", tasks);
     return tasks;
   } catch (error) {
-    console.error("🟥 [API] Error fetching tasks:", error);
+    console.error("Error fetching tasks:", error);
     toast.error("Something went wrong");
     return [];
   }

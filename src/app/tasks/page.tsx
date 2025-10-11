@@ -15,6 +15,8 @@ import {
   updateTask as updateTaskAction,
   deleteTask as deleteTaskAction,
   toggleComplete as toggleCompleteAction,
+  fetchTasksByCategory,
+  setSelectedCategory,
 } from "../../redux/taskSlice";
 import toast from "react-hot-toast";
 import CategoryFilter from "../../components/tasks/CategoryFilter";
@@ -34,14 +36,9 @@ export default function TasksPage() {
   const isAuthChecked = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
-  console.log(tasks);
+
 
   const currentUser = useAppSelector((state: RootState) => state.auth.user);
-  useEffect(() => {
-    console.log("✅ Auth Check:", isAuthChecked);
-    console.log("✅ Current User:", currentUser);
-    console.log("✅ Token:", localStorage.getItem("token"));
-  }, [isAuthChecked, currentUser]);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -65,105 +62,60 @@ export default function TasksPage() {
     { name: "Shopping", icon: "🛒" },
   ];
 
-  // useEffect(() => {
-  //   const fetchTasks = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const fetchedTasks = await getTasksAPI(selectedCategory);
-  //       dispatch(setTasks(fetchedTasks));
-  //     } catch (error) {
-  //       toast.error("Failed to fetch tasks");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
 
-  //   fetchTasks();
-  // }, [selectedCategory, dispatch]);
   useEffect(() => {
-  const fetchTasks = async () => {
-    console.log("🟧 [FETCH] Fetching tasks for category:", selectedCategory);
+    const fetchTasks = async () => {
+      try {
+        setLoading(true);
+        console.log(`Fetching tasks for category: ${selectedCategory}`);
+        const fetchedTasks = await getTasksAPI(selectedCategory);
+        console.log(`Fetched ${fetchedTasks.length} tasks for category: ${selectedCategory}`, fetchedTasks);
+        dispatch(setTasks(fetchedTasks));
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        toast.error("Failed to fetch tasks");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [selectedCategory, dispatch]);
+
+  const handleFormChange = (field: keyof TaskFormData, value: string) => {
+    
+    setTaskFormData({ ...taskFormData, [field]: value });
+  };
+
+
+  const addTask = async () => {
+    console.log("🟧 [CREATE] Creating task with data:", taskFormData);
     try {
-      setLoading(true);
-      const fetchedTasks = await getTasksAPI(selectedCategory);
-      console.log("🟩 [FETCH] Tasks fetched successfully:", fetchedTasks);
-      dispatch(setTasks(fetchedTasks));
+      const newTaskData = await createTaskAPI(taskFormData);
+      console.log("🟩 [CREATE] API returned:", newTaskData);
+
+      if (newTaskData._id) {
+        dispatch(addTaskAction(newTaskData));
+        toast.success("Task created");
+        console.log("🟦 [CREATE] Task successfully added to store");
+        setShowForm(false);
+        setTaskFormData({
+          title: "",
+          description: "",
+          dueDate: "",
+          category: "work",
+        });
+        console.log("🟨 [CREATE] Form reset");
+      } else {
+        console.error("🟥 [CREATE] Missing _id in response:", newTaskData);
+        toast.error("Failed to get task ID");
+      }
     } catch (error) {
-      console.error("🟥 [FETCH] Failed to fetch tasks:", error);
-      toast.error("Failed to fetch tasks");
-    } finally {
-      setLoading(false);
+      console.error("🟥 [CREATE] Error creating task:", error);
+      toast.error("Something went wrong");
     }
   };
 
-  fetchTasks();
-}, [selectedCategory, dispatch]);
-
-  // const handleFormChange = (field: keyof TaskFormData, value: string) => {
-  //   setTaskFormData({ ...taskFormData, [field]: value });
-  // };
-
-  // const addTask = async () => {
-  //   try {
-  //     const newTaskData = await createTaskAPI(taskFormData);
-  //     if (newTaskData._id) {
-  //       dispatch(addTaskAction(newTaskData));
-  //       toast.success("Task created");
-  //       setShowForm(false);
-  //       setTaskFormData({
-  //         title: "",
-  //         description: "",
-  //         dueDate: "",
-  //         category: "work",
-  //       });
-  //     } else {
-  //       toast.error("Failed to get task ID");
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong");
-  //   }
-  // };
-  const handleFormChange = (field: keyof TaskFormData, value: string) => {
-  console.log(`🟨 [FORM] Field changed: ${field} → ${value}`);
-  setTaskFormData({ ...taskFormData, [field]: value });
-  console.log("🟩 [FORM] Updated taskFormData:", { ...taskFormData, [field]: value });
-};
-
-// ✅ create new task
-const addTask = async () => {
-  console.log("🟧 [CREATE] Creating task with data:", taskFormData);
-  try {
-    const newTaskData = await createTaskAPI(taskFormData);
-    console.log("🟩 [CREATE] API returned:", newTaskData);
-
-    if (newTaskData._id) {
-      dispatch(addTaskAction(newTaskData));
-      toast.success("Task created");
-      console.log("🟦 [CREATE] Task successfully added to store");
-      setShowForm(false);
-      setTaskFormData({
-        title: "",
-        description: "",
-        dueDate: "",
-        category: "work",
-      });
-      console.log("🟨 [CREATE] Form reset");
-    } else {
-      console.error("🟥 [CREATE] Missing _id in response:", newTaskData);
-      toast.error("Failed to get task ID");
-    }
-  } catch (error) {
-    console.error("🟥 [CREATE] Error creating task:", error);
-    toast.error("Something went wrong");
-  }
-};
-
-// ✅ عند تغيير الفلتر
-const handleCategoryClick = (cat: string) => {
-  const normalized = cat.toLowerCase();
-  console.log("🟪 [UI] Category clicked:", normalized);
-  setSelectedCategory(normalized);
-};
 
   const saveEditTask = async () => {
     if (!taskToEdit) return;
@@ -213,12 +165,9 @@ const handleCategoryClick = (cat: string) => {
     }
   };
 
-  const filteredTasks =
-    selectedCategory === 'all'
-      ? tasks
-      : tasks.filter((task) => task.category.toLowerCase() === selectedCategory.toLowerCase());
-
-      
+  // Since we're fetching tasks from API based on selectedCategory,
+  // we don't need client-side filtering
+  const filteredTasks = tasks;
 
   return (
     <>
@@ -295,6 +244,8 @@ const handleCategoryClick = (cat: string) => {
                 options={options}
               />
             )}
+
+      
 
             <TaskList
               tasks={filteredTasks}
