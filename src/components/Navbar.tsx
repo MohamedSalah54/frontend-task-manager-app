@@ -307,7 +307,7 @@ export default function Navbar() {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center space-x-2 focus:outline-none"
                 >
-                 {profile?.profileImage && isValidUrl(imageUrl) ? (
+{profile?.profileImage && isValidUrl(imageUrl) ? (
   <>
     {console.log("🖼️ Rendering profile image:", imageUrl)}
     <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
@@ -326,6 +326,7 @@ export default function Navbar() {
     <FaUserCircle className="text-2xl" />
   </>
 )}
+
 
                 </button>
 
