@@ -11,7 +11,7 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await api.get('/auth/me',);
+        const res = await api.get('/auth/me',{withCredentials:true});
 
         if (res.status === 200) {
           setIsAuthenticated(true);
