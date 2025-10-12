@@ -259,131 +259,128 @@ const handleTaskCreated = () => {
   const hasTeam = teams && teams.length > 0;
   const team = hasTeam ? teams[0] : null;
 
-  const renderSidebar = (team: Team) => {
-    // if (!team) {
-    //   return <div className="p-6"><Loader /></div>;
-    // }
-console.log("Team Data:", team);
+ const renderSidebar = (team: Team) => {
+  console.log("Team Data:", team);
 
-    return (
-      <ProtectedRoute>
-        <div className="w-1/5 bg-gray-50 p-6 border-r border-gray-200 overflow-y-auto">
-          <div className="hidden md:block">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              {team.name}
-            </h2>
+  // دالة لتوليد لينك الصورة بشكل صحيح
+  const getImageUrl = (imagePath?: string) => {
+    if (!imagePath) return "";
+    return imagePath.startsWith("http")
+      ? imagePath.replace(/\\/g, "/")
+      : `${baseUrl}${imagePath}`.replace(/\\/g, "/");
+  };
+
+  return (
+    <ProtectedRoute>
+      <div className="w-1/5 bg-gray-50 p-6 border-r border-gray-200 overflow-y-auto">
+        {/* اسم الفريق */}
+        <div className="hidden md:block">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            {team.name || "Unnamed Team"}
+          </h2>
+        </div>
+
+        {/* الموبايل */}
+        <div className="md:hidden space-y-6">
+          {team.teamLeader?.image && (
+            <img
+              src={getImageUrl(team.teamLeader.image)}
+              alt={team.teamLeader.name}
+              className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+            />
+          )}
+
+          {team.members && team.members.length > 0 && (
+            <div className="space-y-4">
+              {team.members.map((member, index) => (
+                <img
+                  key={member._id || index}
+                  src={getImageUrl(member.image)}
+                  alt={member.name}
+                  className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* الديسكتوب */}
+        <div className="hidden md:block">
+          {/* Team Leader */}
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">
+              Team Lead
+            </h3>
+            <div className="flex items-center">
+              {team.teamLeader?.image ? (
+                <ProfileImageWithFallback
+                  src={getImageUrl(team.teamLeader.image)}
+                  alt={team.teamLeader.name}
+                />
+              ) : (
+                <FaUserCircle className="text-gray-400 text-4xl mr-3" />
+              )}
+
+              <div className="ml-3">
+                <p className="text-gray-800 font-medium text-sm">
+                  {team.teamLeader?.name || "No name available"}
+                </p>
+                <p className="text-gray-500 text-xs">
+                  {team.teamLeader?.email || "No email provided"}
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="md:hidden space-y-6">
-            {team.teamLeader && team.teamLeader.image && (
-              <img
-                src={
-                  team.teamLeader.image.startsWith("http")
-                    ? team.teamLeader.image
-                    : `${baseUrl}/static/${team.teamLeader.image}`.replace(
-                        /\\/g,
-                        "/"
-                      )
-                }
-                alt={team.teamLeader.name}
-                className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-                style={{ objectFit: "cover" }}
-              />
-            )}
-
-            {team.members && team.members.length > 0 && (
-              <div className="space-y-4">
-                {team.members.map((member, index) => {
-                  const imageUrl = member.image?.startsWith("http")
-                    ? member.image.replace(/\\/g, "/")
-                    : `${baseUrl}/static/${member.image}`.replace(/\\/g, "/");
+          {/* Members */}
+          <div className="mb-6">
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
+            <div className="space-y-3" key={team._id}>
+              {team.members && team.members.length > 0 ? (
+                team.members.map((member, index) => {
+                  const imageUrl = getImageUrl(member.image);
+                  const uniqueKey = member._id
+                    ? `${member._id}-${member.email}`
+                    : `member-${index}-${member.email}`;
 
                   return (
-                    <img
-                      key={member._id || index}
-                      src={imageUrl}
-                      alt={member.name}
-                      className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-                      style={{ objectFit: "cover" }}
-                    />
+                    <div key={uniqueKey} className="flex items-center">
+                      <ProfileImageWithFallback
+                        src={imageUrl}
+                        alt={member.name}
+                      />
+                      <div className="ml-3">
+                        <p className="text-gray-800 text-sm font-medium">
+                          {member.name || "Unnamed Member"}
+                        </p>
+                        <p className="text-gray-500 text-xs">
+                          {member.email || "No email"}
+                        </p>
+                      </div>
+                    </div>
                   );
-                })}
-              </div>
-            )}
-          </div>
-
-          <div className="hidden md:block">
-            {/* Team Lead */}
-         <div className="mb-6">
-  <h3 className="text-sm font-semibold text-gray-600 mb-2">Team Lead</h3>
-  <div className="flex items-center">
-    {team.teamLeader && team.teamLeader.image ? (
-      <ProfileImageWithFallback
-        src={
-          team.teamLeader.image.startsWith("http")
-            ? team.teamLeader.image
-            : `${baseUrl}/static/${team.teamLeader.image}`.replace(/\\/g, "/")
-        }
-        alt={team.teamLeader.name}
-      />
-    ) : (
-      <FaUserCircle className="text-gray-400 text-4xl mr-3" />
-    )}
-
-    {team.teamLeader?.name && team.teamLeader?.email ? (
-      <div>
-        <p className="text-gray-800 font-medium text-sm">
-          {team.teamLeader.name}
-        </p>
-        <p className="text-gray-500 text-xs">{team.teamLeader.email}</p>
-      </div>
-    ) : (
-      <p className="text-gray-500 text-sm">No team leader info</p>
-    )}
-  </div>
-</div>
-
-            {/* Members */}
-        <div className="mb-6">
-  <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
-  <div className="space-y-3" key={team._id}>
-    {team.members && team.members.length > 0 ? (
-      team.members.map((member, index) => {
-        const uniqueKey = member._id
-          ? `${member._id}-${member.email}`
-          : `member-${index}-${member.email}`;
-
-        const imageUrl = member.image?.startsWith("http")
-          ? member.image.replace(/\\/g, "/")
-          : `${baseUrl}/static/${member.image}`.replace(/\\/g, "/");
-
-        return (
-          <div key={uniqueKey} className="flex items-center">
-            <ProfileImageWithFallback src={imageUrl} alt={member.name} />
-            <div>
-              <p className="text-gray-800 text-sm font-medium">{member.name}</p>
-              <p className="text-gray-500 text-xs">{member.email}</p>
+                })
+              ) : (
+                <p className="text-gray-500 text-sm">No members found</p>
+              )}
             </div>
           </div>
-        );
-      })
-    ) : (
-      <p className="text-gray-500 text-sm">No members found</p>
-    )}
-  </div>
-</div>
 
-            <div>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">
-                Description
-              </h3>
-              <p className="text-gray-700 text-sm">{team.description}</p>
-            </div>
+          {/* Description */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">
+              Description
+            </h3>
+            <p className="text-gray-700 text-sm">
+              {team.description || "No description provided."}
+            </p>
           </div>
         </div>
-      </ProtectedRoute>
-    );
-  };
+      </div>
+    </ProtectedRoute>
+  );
+};
+
 
   // if (!hasFetched) return <div className="p-10"><Loader /></div>;
 
