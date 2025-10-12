@@ -151,15 +151,14 @@ export default function Navbar() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const baseURL = API.defaults.baseURL || "";
-  console.log("🔹 Base URL:", baseURL);
-  
-  const imageUrl = profile?.profileImage
+const baseURL = API.defaults.baseURL || "";
+const profileImageUrl = profile?.profileImage
   ? `${baseURL.replace(/\/$/, "")}/${profile.profileImage
       .replace(/^\/+/, "")
       .replace(/\\/g, "/")}`
   : "";
 
+console.log("🧩 Navbar Profile Image URL:", profileImageUrl);
 
   
 
@@ -172,9 +171,7 @@ export default function Navbar() {
       return false;
     }
   };
-  console.log("🧩 Raw profile image from API:", profile?.profileImage);
-  console.log("🧠 Computed imageUrl:", imageUrl);
-  console.log("✅ isValidUrl(imageUrl):", isValidUrl(imageUrl));
+
   const canSeeTeam = role && (role === "user" || role === "team-lead");
 
   return (
@@ -307,25 +304,17 @@ export default function Navbar() {
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   className="flex items-center space-x-2 focus:outline-none"
                 >
-{profile?.profileImage && isValidUrl(imageUrl) ? (
-  <>
-    {console.log("🖼️ Rendering profile image:", imageUrl)}
-    <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
-      <Image
-        src={imageUrl}
-        alt="Profile"
-        width={40}
-        height={40}
-        className="object-cover"
-      />
-    </div>
-  </>
-) : (
-  <>
-    {console.log("🚫 No valid image URL, rendering fallback icon")}
+<div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+  {profileImageUrl ? (
+    <img
+      src={profileImageUrl}
+      alt="Profile"
+      className="object-cover w-10 h-10 rounded-full"
+    />
+  ) : (
     <FaUserCircle className="text-2xl" />
-  </>
-)}
+  )}
+</div>
 
 
                 </button>
