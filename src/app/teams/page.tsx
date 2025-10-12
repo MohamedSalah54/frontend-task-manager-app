@@ -51,9 +51,7 @@ interface ProfileImageWithFallbackProps {
   src?: string;
   alt: string;
 }
-interface NavbarProps {
-  path?: string; 
-}
+
 
 
 const TeamPage = () => {
@@ -303,24 +301,38 @@ const buildImageUrl = (path?: string): string => {
 
      
 <div className="md:hidden space-y-6">
+  {/* 🔍 LOG: Data for team leader */}
+  {console.log("📦 [Mobile] teamLeader:", team.teamLeader)}
+
   {team.teamLeader && team.teamLeader.image && (
-    <img
-      src={buildImageUrl(team.teamLeader.image)}
-      alt={team.teamLeader.name}
-      className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-    />
+    <>
+      {console.log("🟢 [Mobile] Rendering team leader image:", team.teamLeader.image)}
+      <img
+        src={buildImageUrl(team.teamLeader.image)}
+        alt={team.teamLeader.name}
+        className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+      />
+    </>
   )}
+
+  {/* 🔍 LOG: Members data */}
+  {console.log("📦 [Mobile] team.members:", team.members)}
 
   {team.members && team.members.length > 0 && (
     <div className="space-y-4">
-      {team.members.map((member, index) => (
-        <img
-          key={member._id || index}
-          src={buildImageUrl(member.image)}
-          alt={member.name}
-          className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-        />
-      ))}
+      {team.members.map((member, index) => {
+        console.log(`👤 [Mobile] Member ${index}:`, member);
+        const imageUrl = buildImageUrl(member.image);
+        console.log(`🖼️ [Mobile] Final member image URL (${index}):`, imageUrl);
+        return (
+          <img
+            key={member._id || index}
+            src={imageUrl}
+            alt={member.name}
+            className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+          />
+        );
+      })}
     </div>
   )}
 </div>
@@ -330,13 +342,21 @@ const buildImageUrl = (path?: string): string => {
   <div className="mb-6">
     <h3 className="text-sm font-semibold text-gray-600 mb-2">Team Lead</h3>
     <div className="flex items-center">
+      {console.log("💻 [Desktop] teamLeader:", team.teamLeader)}
+
       {team.teamLeader && team.teamLeader.image ? (
-        <ProfileImageWithFallback
-          src={buildImageUrl(team.teamLeader.image)}
-          alt={team.teamLeader.name}
-        />
+        <>
+          {console.log("🟢 [Desktop] Rendering leader image:", team.teamLeader.image)}
+          <ProfileImageWithFallback
+            src={buildImageUrl(team.teamLeader.image)}
+            alt={team.teamLeader.name}
+          />
+        </>
       ) : (
-        <FaUserCircle className="text-gray-400 text-4xl mr-3" />
+        <>
+          {console.log("⚠️ [Desktop] No teamLeader image found")}
+          <FaUserCircle className="text-gray-400 text-4xl mr-3" />
+        </>
       )}
 
       {team.teamLeader?.name && team.teamLeader?.email ? (
@@ -355,21 +375,31 @@ const buildImageUrl = (path?: string): string => {
   <div className="mb-6">
     <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
     <div className="space-y-3" key={team._id}>
+      {console.log("💻 [Desktop] team.members:", team.members)}
+
       {team.members && team.members.length > 0 ? (
-        team.members.map((member, index) => (
-          <div key={member._id || index} className="flex items-center">
-            <ProfileImageWithFallback
-              src={buildImageUrl(member.image)}
-              alt={member.name}
-            />
-            <div>
-              <p className="text-gray-800 text-sm font-medium">{member.name}</p>
-              <p className="text-gray-500 text-xs">{member.email}</p>
+        team.members.map((member, index) => {
+          console.log(`👤 [Desktop] Member ${index}:`, member);
+          const imageUrl = buildImageUrl(member.image);
+          console.log(`🖼️ [Desktop] Final member image URL (${index}):`, imageUrl);
+          return (
+            <div key={member._id || index} className="flex items-center">
+              <ProfileImageWithFallback
+                src={imageUrl}
+                alt={member.name}
+              />
+              <div>
+                <p className="text-gray-800 text-sm font-medium">{member.name}</p>
+                <p className="text-gray-500 text-xs">{member.email}</p>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
-        <p className="text-gray-500 text-sm">No members found</p>
+        <>
+          {console.log("⚠️ [Desktop] No members found")}
+          <p className="text-gray-500 text-sm">No members found</p>
+        </>
       )}
     </div>
   </div>
@@ -379,6 +409,7 @@ const buildImageUrl = (path?: string): string => {
     <p className="text-gray-700 text-sm">{team.description}</p>
   </div>
 </div>
+
         </div>
       </ProtectedRoute>
     );
