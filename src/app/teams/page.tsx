@@ -263,14 +263,25 @@ const TeamPage = () => {
     dispatch(fetchTeams()).then(() => setHasFetched(true));
   }, [dispatch, currentUser, router]);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  
-  const buildImageUrl = (path?:string ): string => {
-  if (!path) return "";
-  const cleanBase = baseUrl?.replace(/\/$/, ""); 
-  const cleanPath = path.replace(/^\/+/, "").replace(/\\/g, "/"); 
-  return `${cleanBase}/${cleanPath}`;
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+const buildImageUrl = (path?: string): string => {
+  console.log("🟡 [buildImageUrl] Received path:", path);
+  console.log("🟡 [buildImageUrl] Base URL:", baseUrl);
+
+  if (!path) {
+    console.log("⚠️ [buildImageUrl] No path provided, returning empty string");
+    return "";
+  }
+
+  const cleanBase = baseUrl?.replace(/\/$/, "");
+  const cleanPath = path.replace(/^\/+/, "").replace(/\\/g, "/");
+  const fullUrl = `${cleanBase}/${cleanPath}`;
+
+  console.log("✅ [buildImageUrl] Final image URL:", fullUrl);
+  return fullUrl;
 };
+
 
 
   const hasTeam = teams && teams.length > 0;
