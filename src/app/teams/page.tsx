@@ -269,7 +269,10 @@ const buildImageUrl = (path?: string): string => {
   console.log("🟡 [buildImageUrl] Received path:", path);
   console.log("🟡 [buildImageUrl] Base URL:", baseUrl);
 
-  if (!path) return "";
+  if (!path) {
+    console.log("⚠️ [buildImageUrl] No path provided, returning empty string");
+    return "";
+  }
 
   const cleanBase = baseUrl?.replace(/\/$/, "");
   const cleanPath = path.replace(/^\/+/, "").replace(/\\/g, "/");
@@ -278,7 +281,6 @@ const buildImageUrl = (path?: string): string => {
   console.log("✅ [buildImageUrl] Final image URL:", fullUrl);
   return fullUrl;
 };
-
 
 
 
@@ -309,17 +311,18 @@ const buildImageUrl = (path?: string): string => {
     />
   )}
 
-  {team.teamLeader && team.teamLeader.image && (
-  <>
-    {console.log("🧩 TeamLeader Image Path:", team.teamLeader.image)}
-    <img
-      src={buildImageUrl(team.teamLeader.image)}
-      alt={team.teamLeader.name}
-      className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-    />
-  </>
-)}
-
+  {team.members && team.members.length > 0 && (
+    <div className="space-y-4">
+      {team.members.map((member, index) => (
+        <img
+          key={member._id || index}
+          src={buildImageUrl(member.image)}
+          alt={member.name}
+          className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+        />
+      ))}
+    </div>
+  )}
 </div>
 
 {/* Desktop */}
@@ -352,18 +355,22 @@ const buildImageUrl = (path?: string): string => {
   <div className="mb-6">
     <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
     <div className="space-y-3" key={team._id}>
-     {team.members?.map((member, index) => (
-  <>
-    {console.log("👥 Member Image Path:", member.image)}
-    <img
-      key={member._id || index}
-      src={buildImageUrl(member.image)}
-      alt={member.name}
-      className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-    />
-  </>
-))}
-
+      {team.members && team.members.length > 0 ? (
+        team.members.map((member, index) => (
+          <div key={member._id || index} className="flex items-center">
+            <ProfileImageWithFallback
+              src={buildImageUrl(member.image)}
+              alt={member.name}
+            />
+            <div>
+              <p className="text-gray-800 text-sm font-medium">{member.name}</p>
+              <p className="text-gray-500 text-xs">{member.email}</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p className="text-gray-500 text-sm">No members found</p>
+      )}
     </div>
   </div>
 

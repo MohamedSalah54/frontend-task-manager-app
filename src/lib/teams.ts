@@ -24,7 +24,7 @@ export const getMyTeam = async (): Promise<Team | null> => {
 
 export const createTeam = async (data: CreateTeamDto): Promise<Team> => {
   try {
-    const response = await api.post(`/create`, data);
+    const response = await api.post(`/teams/create`, data);
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -48,7 +48,7 @@ export const updateTeam = async (id: string, data: UpdateTeamDto): Promise<Team>
   };
 
   try {
-    const response = await api.put(`/${id}`, safeData);
+    const response = await api.put(`/teams/${id}`, safeData);
     return response.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -64,7 +64,7 @@ export const updateTeam = async (id: string, data: UpdateTeamDto): Promise<Team>
 
 export const deleteTeam = async (id: string): Promise<void> => {
   try {
-    await api.delete(`/${id}`);
+    await api.delete(`/teams/${id}`);
     toast.success('Team deleted successfully!');
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -77,7 +77,7 @@ export const deleteTeam = async (id: string): Promise<void> => {
 
 export const checkUserInTeam = async (email: string): Promise<any> => {
   try {
-    const response = await api.get(`/check-user`, { 
+    const response = await api.get(`/teams/check-user`, { 
       params: { email },
     });
     return response.data;  
@@ -92,7 +92,7 @@ export const checkUserInTeam = async (email: string): Promise<any> => {
 
 export const getTeamMembers = async () => {
   try {
-    const res = await api.get(`/my-members`, {
+    const res = await api.get(`/teams/my-members`, {
     });
 
     return res.data.members;
