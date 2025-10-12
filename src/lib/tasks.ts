@@ -83,6 +83,24 @@ export const fetchTasksTeam = async (): Promise<Task[]> => {
   }
 }
 
+export const fetchTasksTeamById = async (teamId: string): Promise<Task[]> => {
+  try {
+    const response = await api.get(`/tasks/team/all`, {
+      params: { teamId },
+    });
+
+    if (!response.data) {
+      throw new Error("Failed to fetch team tasks");
+    }
+
+    return response.data;
+  } catch (error: any) {
+    toast.error("Failed to fetch team tasks");
+    throw error;
+  }
+};
+
+
 export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
   try {
     const response = await api.get(`/tasks`, {

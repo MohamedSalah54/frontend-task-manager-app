@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { editTeam, fetchTeams, removeTeam } from "../../redux/teamSlice";
-import { AppDispatch, RootState } from "../../redux/store";
-import { Team, UpdateTeamDto } from "../../interfaces/team";
+import { fetchTeams, removeTeam } from "../../redux/teamSlice";
+import { RootState } from "../../redux/store";
+import { Team } from "../../interfaces/team";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import CreateTeamModal from "../../components/teams/dashboard/team/CreateTeamModal";
-import { useAppSelector } from "@/hooks/redux";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { Edit, Delete, Add } from "@mui/icons-material";
 import DeleteTeamModal from "@/components/teams/dashboard/team/DeleteTeamModal";
 import Loader from "@/loader/Loader";
@@ -27,7 +27,7 @@ import {
   deleteTask,
   fetchAllTasksForTeamLead,
   fetchTasksTeam,
-  fetchTasksTeams,
+  fetchTasksTeamById,
   toggleTaskComplete,
 } from "@/lib/tasks";
 import { setTasks, updateTask } from "@/redux/taskSlice";
@@ -47,17 +47,13 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import CommentsModal from "@/components/comments/CommentModal";
 import { FaUserCircle } from "react-icons/fa";
 
-interface ProfileImageWithFallbackProps {
+
+interface ProfileImageProps {
   src?: string;
-  alt: string;
+  alt?: string; 
 }
-interface NavbarProps {
-  path?: string; 
-}
-
-
 const TeamPage = () => {
-  const dispatch = useDispatch<AppDispatch>();
+const dispatch = useAppDispatch();
   const router = useRouter();
 
   const { teams } = useAppSelector((state: RootState) => state.teams);
@@ -82,11 +78,6 @@ const TeamPage = () => {
   const [taskId, setTaskId] = useState<string | null>(null);
 
   const [selectedTaskForComments, setSelectedTaskForComments] = useState(null);
-  const [updateData, setUpdateData] = useState<UpdateTeamDto>({
-    name: "",
-    description: "",
-    members: [],
-  });
 
   const handleOpenComments = (task: any) => {
     setSelectedTaskForComments(task);
@@ -128,25 +119,22 @@ const TeamPage = () => {
     }
   };
 
-  const ProfileImageWithFallback: React.FC<ProfileImageWithFallbackProps> = ({
-    src,
-    alt,
-  }) => {
-    const [error, setError] = useState(false);
+  const ProfileImageWithFallback : React.FC<ProfileImageProps>  = ({ src, alt }) => {
+  const [error, setError] = useState(false);
 
-    if (error || !src) {
-      return <FaUserCircle className="text-gray-400 text-4xl mr-3" />;
-    }
+  if (error || !src) {
+    return <FaUserCircle className="text-gray-400 text-4xl mr-3" />;
+  }
 
-    return (
-      <img
-        src={src}
-        alt={alt}
-        className="w-10 h-10 rounded-full object-cover border mr-3"
-        onError={() => setError(true)}
-      />
-    );
-  };
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="w-10 h-10 rounded-full object-cover border mr-3"
+      onError={() => setError(true)} // لو الصورة فشلت في التحميل
+    />
+  );
+};
 
   useEffect(() => {
     if (!teamId || !currentUser) {
@@ -178,15 +166,18 @@ const TeamPage = () => {
     }
   }, [tasks]);
 
-  const handleTaskCreated = () => {
-    if (teamId) {
-      fetchTasksTeams(teamId)
-        .then((tasksData) => {
-          dispatch(setTasks(tasksData));
-        })
-        .catch((error) => {});
-    }
-  };
+const handleTaskCreated = () => {
+  if (teamId) {
+    fetchTasksTeamById(teamId)
+      .then((tasksData) => {
+        dispatch(setTasks(tasksData));
+      })
+      .catch((error) => {
+        console.error("Error fetching team tasks:", error);
+      });
+  }
+};
+
 
   const handleTaskUpdated = async () => {
     if (selectedTask) {
@@ -231,12 +222,13 @@ const TeamPage = () => {
   };
 
   const handleUpdateTeam = async () => {
-    try {
-      await dispatch(editTeam({ id: teams[0]._id, data: updateData })).unwrap();
-
-      setShowUpdateModal(false);
-      router.push("/teams");
-    } catch (error) {}
+  try {
+    await dispatch(removeTeam(teams[0]._id)).unwrap();
+    setShowDeleteModal(false);
+    router.push("/");
+  } catch (error) {
+    toast.error("Failed to delete team");
+  }
   };
 
   useEffect(() => {
@@ -263,27 +255,7 @@ const TeamPage = () => {
     dispatch(fetchTeams()).then(() => setHasFetched(true));
   }, [dispatch, currentUser, router]);
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
-const buildImageUrl = (path?: string): string => {
-  console.log("🟡 [buildImageUrl] Received path:", path);
-  console.log("🟡 [buildImageUrl] Base URL:", baseUrl);
-
-  if (!path) {
-    console.log("⚠️ [buildImageUrl] No path provided, returning empty string");
-    return "";
-  }
-
-  const cleanBase = baseUrl?.replace(/\/$/, "");
-  const cleanPath = path.replace(/^\/+/, "").replace(/\\/g, "/");
-  const fullUrl = `${cleanBase}/${cleanPath}`;
-
-  console.log("✅ [buildImageUrl] Final image URL:", fullUrl);
-  return fullUrl;
-};
-
-
-
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL||"http://localhost:3001";
   const hasTeam = teams && teams.length > 0;
   const team = hasTeam ? teams[0] : null;
 
@@ -301,84 +273,112 @@ const buildImageUrl = (path?: string): string => {
             </h2>
           </div>
 
-     
-<div className="md:hidden space-y-6">
-  {team.teamLeader && team.teamLeader.image && (
-    <img
-      src={buildImageUrl(team.teamLeader.image)}
-      alt={team.teamLeader.name}
-      className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-    />
-  )}
+          <div className="md:hidden space-y-6">
+            {team.teamLeader && team.teamLeader.image && (
+              <img
+                src={
+                  team.teamLeader.image.startsWith("http")
+                    ? team.teamLeader.image
+                    : `${baseUrl}/static/${team.teamLeader.image}`.replace(
+                        /\\/g,
+                        "/"
+                      )
+                }
+                alt={team.teamLeader.name}
+                className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+                style={{ objectFit: "cover" }}
+              />
+            )}
 
-  {team.members && team.members.length > 0 && (
-    <div className="space-y-4">
-      {team.members.map((member, index) => (
-        <img
-          key={member._id || index}
-          src={buildImageUrl(member.image)}
-          alt={member.name}
-          className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-        />
-      ))}
-    </div>
-  )}
+            {team.members && team.members.length > 0 && (
+              <div className="space-y-4">
+                {team.members.map((member, index) => {
+                  const imageUrl = member.image?.startsWith("http")
+                    ? member.image.replace(/\\/g, "/")
+                    : `${baseUrl}/static/${member.image}`.replace(/\\/g, "/");
+
+                  return (
+                    <img
+                      key={member._id || index}
+                      src={imageUrl}
+                      alt={member.name}
+                      className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+                      style={{ objectFit: "cover" }}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="hidden md:block">
+            {/* Team Lead */}
+         <div className="mb-6">
+  <h3 className="text-sm font-semibold text-gray-600 mb-2">Team Lead</h3>
+  <div className="flex items-center">
+    {team.teamLeader && team.teamLeader.image ? (
+      <ProfileImageWithFallback
+        src={
+          team.teamLeader.image.startsWith("http")
+            ? team.teamLeader.image
+            : `${baseUrl}/static/${team.teamLeader.image}`.replace(/\\/g, "/")
+        }
+        alt={team.teamLeader.name}
+      />
+    ) : (
+      <FaUserCircle className="text-gray-400 text-4xl mr-3" />
+    )}
+
+    {team.teamLeader?.name && team.teamLeader?.email ? (
+      <div>
+        <p className="text-gray-800 font-medium text-sm">
+          {team.teamLeader.name}
+        </p>
+        <p className="text-gray-500 text-xs">{team.teamLeader.email}</p>
+      </div>
+    ) : (
+      <p className="text-gray-500 text-sm">No team leader info</p>
+    )}
+  </div>
 </div>
 
-{/* Desktop */}
-<div className="hidden md:block">
-  <div className="mb-6">
-    <h3 className="text-sm font-semibold text-gray-600 mb-2">Team Lead</h3>
-    <div className="flex items-center">
-      {team.teamLeader && team.teamLeader.image ? (
-        <ProfileImageWithFallback
-          src={buildImageUrl(team.teamLeader.image)}
-          alt={team.teamLeader.name}
-        />
-      ) : (
-        <FaUserCircle className="text-gray-400 text-4xl mr-3" />
-      )}
+            {/* Members */}
+        <div className="mb-6">
+  <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
+  <div className="space-y-3" key={team._id}>
+    {team.members && team.members.length > 0 ? (
+      team.members.map((member, index) => {
+        const uniqueKey = member._id
+          ? `${member._id}-${member.email}`
+          : `member-${index}-${member.email}`;
 
-      {team.teamLeader?.name && team.teamLeader?.email ? (
-        <div>
-          <p className="text-gray-800 font-medium text-sm">
-            {team.teamLeader.name}
-          </p>
-          <p className="text-gray-500 text-xs">{team.teamLeader.email}</p>
-        </div>
-      ) : (
-        <p className="text-gray-500 text-sm">No team leader info</p>
-      )}
-    </div>
-  </div>
+        const imageUrl = member.image?.startsWith("http")
+          ? member.image.replace(/\\/g, "/")
+          : `${baseUrl}/static/${member.image}`.replace(/\\/g, "/");
 
-  <div className="mb-6">
-    <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
-    <div className="space-y-3" key={team._id}>
-      {team.members && team.members.length > 0 ? (
-        team.members.map((member, index) => (
-          <div key={member._id || index} className="flex items-center">
-            <ProfileImageWithFallback
-              src={buildImageUrl(member.image)}
-              alt={member.name}
-            />
+        return (
+          <div key={uniqueKey} className="flex items-center">
+            <ProfileImageWithFallback src={imageUrl} alt={member.name} />
             <div>
               <p className="text-gray-800 text-sm font-medium">{member.name}</p>
               <p className="text-gray-500 text-xs">{member.email}</p>
             </div>
           </div>
-        ))
-      ) : (
-        <p className="text-gray-500 text-sm">No members found</p>
-      )}
-    </div>
-  </div>
-
-  <div>
-    <h3 className="text-sm font-semibold text-gray-600 mb-2">Description</h3>
-    <p className="text-gray-700 text-sm">{team.description}</p>
+        );
+      })
+    ) : (
+      <p className="text-gray-500 text-sm">No members found</p>
+    )}
   </div>
 </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                Description
+              </h3>
+              <p className="text-gray-700 text-sm">{team.description}</p>
+            </div>
+          </div>
         </div>
       </ProtectedRoute>
     );
