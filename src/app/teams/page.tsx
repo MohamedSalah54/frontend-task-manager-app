@@ -47,13 +47,12 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import CommentsModal from "@/components/comments/CommentModal";
 import { FaUserCircle } from "react-icons/fa";
 
-
 interface ProfileImageProps {
   src?: string;
-  alt?: string; 
+  alt?: string;
 }
 const TeamPage = () => {
-const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const router = useRouter();
 
   const { teams } = useAppSelector((state: RootState) => state.teams);
@@ -119,22 +118,25 @@ const dispatch = useAppDispatch();
     }
   };
 
-  const ProfileImageWithFallback : React.FC<ProfileImageProps>  = ({ src, alt }) => {
-  const [error, setError] = useState(false);
+  const ProfileImageWithFallback: React.FC<ProfileImageProps> = ({
+    src,
+    alt,
+  }) => {
+    const [error, setError] = useState(false);
 
-  if (error || !src) {
-    return <FaUserCircle className="text-gray-400 text-4xl mr-3" />;
-  }
+    if (error || !src) {
+      return <FaUserCircle className="text-gray-400 text-4xl mr-3" />;
+    }
 
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-10 h-10 rounded-full object-cover border mr-3"
-      onError={() => setError(true)} 
-    />
-  );
-};
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className="w-10 h-10 rounded-full object-cover border mr-3"
+        onError={() => setError(true)}
+      />
+    );
+  };
 
   useEffect(() => {
     if (!teamId || !currentUser) {
@@ -166,18 +168,17 @@ const dispatch = useAppDispatch();
     }
   }, [tasks]);
 
-const handleTaskCreated = () => {
-  if (teamId) {
-    fetchTasksTeamById(teamId)
-      .then((tasksData) => {
-        dispatch(setTasks(tasksData));
-      })
-      .catch((error) => {
-        console.error("Error fetching team tasks:", error);
-      });
-  }
-};
-
+  const handleTaskCreated = () => {
+    if (teamId) {
+      fetchTasksTeamById(teamId)
+        .then((tasksData) => {
+          dispatch(setTasks(tasksData));
+        })
+        .catch((error) => {
+          console.error("Error fetching team tasks:", error);
+        });
+    }
+  };
 
   const handleTaskUpdated = async () => {
     if (selectedTask) {
@@ -222,13 +223,13 @@ const handleTaskCreated = () => {
   };
 
   const handleUpdateTeam = async () => {
-  try {
-    await dispatch(removeTeam(teams[0]._id)).unwrap();
-    setShowDeleteModal(false);
-    router.push("/");
-  } catch (error) {
-    toast.error("Failed to delete team");
-  }
+    try {
+      await dispatch(removeTeam(teams[0]._id)).unwrap();
+      setShowDeleteModal(false);
+      router.push("/");
+    } catch (error) {
+      toast.error("Failed to delete team");
+    }
   };
 
   useEffect(() => {
@@ -255,132 +256,136 @@ const handleTaskCreated = () => {
     dispatch(fetchTeams()).then(() => setHasFetched(true));
   }, [dispatch, currentUser, router]);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL||"http://localhost:3001";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const hasTeam = teams && teams.length > 0;
   const team = hasTeam ? teams[0] : null;
 
- const renderSidebar = (team: Team) => {
-  console.log("Team Data:", team);
+  console.log("Teams array:", teams);
+console.log("First team:", teams?.[0]);
 
-  // دالة لتوليد لينك الصورة بشكل صحيح
-  const getImageUrl = (imagePath?: string) => {
-    if (!imagePath) return "";
-    return imagePath.startsWith("http")
-      ? imagePath.replace(/\\/g, "/")
-      : `${baseUrl}${imagePath}`.replace(/\\/g, "/");
-  };
+  const renderSidebar = (team: Team) => {
+    console.log("Team Data:", team);
 
-  return (
-    <ProtectedRoute>
-      <div className="w-1/5 bg-gray-50 p-6 border-r border-gray-200 overflow-y-auto">
-        {/* اسم الفريق */}
-        <div className="hidden md:block">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            {team.name || "Unnamed Team"}
-          </h2>
-        </div>
+    // دالة لتوليد لينك الصورة بشكل صحيح
+    const getImageUrl = (imagePath?: string) => {
+      if (!imagePath) return "";
+      return imagePath.startsWith("http")
+        ? imagePath.replace(/\\/g, "/")
+        : `${baseUrl}${imagePath}`.replace(/\\/g, "/");
+    };
 
-        {/* الموبايل */}
-        <div className="md:hidden space-y-6">
-          {team.teamLeader?.image && (
-            <img
-              src={getImageUrl(team.teamLeader.image)}
-              alt={team.teamLeader.name}
-              className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-            />
-          )}
+    return (
+      <ProtectedRoute>
+        <div className="w-1/5 bg-gray-50 p-6 border-r border-gray-200 overflow-y-auto">
+          {/* اسم الفريق */}
+          <div className="hidden md:block">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              {team.name || "Unnamed Team"}
+            </h2>
+          </div>
 
-          {team.members && team.members.length > 0 && (
-            <div className="space-y-4">
-              {team.members.map((member, index) => (
-                <img
-                  key={member._id || index}
-                  src={getImageUrl(member.image)}
-                  alt={member.name}
-                  className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
-                />
-              ))}
-            </div>
-          )}
-        </div>
+          {/* الموبايل */}
+          <div className="md:hidden space-y-6">
+            {team.teamLeader?.image && (
+              <img
+                src={getImageUrl(team.teamLeader.image)}
+                alt={team.teamLeader.name}
+                className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+              />
+            )}
 
-        {/* الديسكتوب */}
-        <div className="hidden md:block">
-          {/* Team Leader */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-600 mb-2">
-              Team Lead
-            </h3>
-            <div className="flex items-center">
-              {team.teamLeader?.image ? (
-                <ProfileImageWithFallback
-                  src={getImageUrl(team.teamLeader.image)}
-                  alt={team.teamLeader.name}
-                />
-              ) : (
-                <FaUserCircle className="text-gray-400 text-4xl mr-3" />
-              )}
+            {team.members && team.members.length > 0 && (
+              <div className="space-y-4">
+                {team.members.map((member, index) => (
+                  <img
+                    key={member._id || index}
+                    src={getImageUrl(member.image)}
+                    alt={member.name}
+                    className="w-full max-w-xs mx-auto rounded-full object-cover aspect-square"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
-              <div className="ml-3">
-                <p className="text-gray-800 font-medium text-sm">
-                  {team.teamLeader?.name || "No name available"}
-                </p>
-                <p className="text-gray-500 text-xs">
-                  {team.teamLeader?.email || "No email provided"}
-                </p>
+          {/* الديسكتوب */}
+          <div className="hidden md:block">
+            {/* Team Leader */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                Team Lead
+              </h3>
+              <div className="flex items-center">
+                {team.teamLeader?.image ? (
+                  <ProfileImageWithFallback
+                    src={getImageUrl(team.teamLeader.image)}
+                    alt={team.teamLeader.name}
+                  />
+                ) : (
+                  <FaUserCircle className="text-gray-400 text-4xl mr-3" />
+                )}
+
+                <div className="ml-3">
+                  <p className="text-gray-800 font-medium text-sm">
+                    {team.teamLeader?.name || "No name available"}
+                  </p>
+                  <p className="text-gray-500 text-xs">
+                    {team.teamLeader?.email || "No email provided"}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Members */}
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-gray-600 mb-2">Members</h3>
-            <div className="space-y-3" key={team._id}>
-              {team.members && team.members.length > 0 ? (
-                team.members.map((member, index) => {
-                  const imageUrl = getImageUrl(member.image);
-                  const uniqueKey = member._id
-                    ? `${member._id}-${member.email}`
-                    : `member-${index}-${member.email}`;
+            {/* Members */}
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                Members
+              </h3>
+              <div className="space-y-3" key={team._id}>
+                {team.members && team.members.length > 0 ? (
+                  team.members.map((member, index) => {
+                    const imageUrl = getImageUrl(member.image);
+                    const uniqueKey = member._id
+                      ? `${member._id}-${member.email}`
+                      : `member-${index}-${member.email}`;
 
-                  return (
-                    <div key={uniqueKey} className="flex items-center">
-                      <ProfileImageWithFallback
-                        src={imageUrl}
-                        alt={member.name}
-                      />
-                      <div className="ml-3">
-                        <p className="text-gray-800 text-sm font-medium">
-                          {member.name || "Unnamed Member"}
-                        </p>
-                        <p className="text-gray-500 text-xs">
-                          {member.email || "No email"}
-                        </p>
+                    return (
+                      <div key={uniqueKey} className="flex items-center">
+                        <ProfileImageWithFallback
+                          src={imageUrl}
+                          alt={member.name}
+                        />
+                        <div className="ml-3">
+                          <p className="text-gray-800 text-sm font-medium">
+                            {member.name || "Unnamed Member"}
+                          </p>
+                          <p className="text-gray-500 text-xs">
+                            {member.email || "No email"}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-gray-500 text-sm">No members found</p>
-              )}
+                    );
+                  })
+                ) : (
+                  <p className="text-gray-500 text-sm">No members found</p>
+                )}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+                Description
+              </h3>
+              <p className="text-gray-700 text-sm">
+                {team.description || "No description provided."}
+              </p>
             </div>
           </div>
-
-          {/* Description */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-2">
-              Description
-            </h3>
-            <p className="text-gray-700 text-sm">
-              {team.description || "No description provided."}
-            </p>
-          </div>
         </div>
-      </div>
-    </ProtectedRoute>
-  );
-};
-
+      </ProtectedRoute>
+    );
+  };
 
   // if (!hasFetched) return <div className="p-10"><Loader /></div>;
 
@@ -446,7 +451,7 @@ const handleTaskCreated = () => {
           )}
 
           {/* Case: Team exists */}
-          {hasTeam && (
+          {hasTeam && teams?.length > 0 && teams[0] && (
             <>
               {renderSidebar(teams[0])}
               <div className="flex-1 bg-gray-50 p-6 overflow-y-auto">
