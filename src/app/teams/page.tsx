@@ -387,7 +387,7 @@ console.log("First team:", teams?.[0]);
     );
   };
 
-  // if (!hasFetched) return <div className="p-10"><Loader /></div>;
+  if (!hasFetched) return <div className="p-10"><Loader /></div>;
 
   return (
     <ProtectedRoute>
