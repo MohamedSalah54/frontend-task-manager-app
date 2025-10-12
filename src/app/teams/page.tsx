@@ -131,7 +131,7 @@ const dispatch = useAppDispatch();
       src={src}
       alt={alt}
       className="w-10 h-10 rounded-full object-cover border mr-3"
-      onError={() => setError(true)} // لو الصورة فشلت في التحميل
+      onError={() => setError(true)} 
     />
   );
 };
@@ -263,6 +263,7 @@ const handleTaskCreated = () => {
     // if (!team) {
     //   return <div className="p-6"><Loader /></div>;
     // }
+console.log("Team Data:", team);
 
     return (
       <ProtectedRoute>

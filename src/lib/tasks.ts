@@ -104,7 +104,7 @@ export const fetchTasksTeamById = async (teamId: string): Promise<Task[]> => {
 export const fetchTasksTeams = async (teamId: string): Promise<Task[]> => {
   try {
     const response = await api.get(`/tasks`, {
-      params: { teamId }, // إرسال teamId للـ API
+      params: { teamId }, 
     });
 
     if (!response.data) {
