@@ -7,18 +7,22 @@ import api from './api';
 
 export const getMyTeam = async (): Promise<Team | null> => {
   try {
-    const response = await api.get(`/teams/my-team`, );
-
+    const response = await api.get(`/teams/my-team`);
 
     if (!response.data || response.data.message === 'No team found') {
-      return null; 
+      return null;
     }
 
-    return response.data;
+    const teamData = response.data.team ? response.data.team : response.data;
+
+    return teamData;
   } catch (error: unknown) {
-    throw new Error(error instanceof Error ? error.message : 'An unknown error occurred');
+    throw new Error(
+      error instanceof Error ? error.message : "An unknown error occurred"
+    );
   }
 };
+
 
 
 
