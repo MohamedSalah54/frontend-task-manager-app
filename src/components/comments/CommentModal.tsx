@@ -341,7 +341,7 @@ export default function CommentsModal({ open, onClose, task }: Props) {
                             backgroundColor: "white",
                             border: "none",
                             cursor: "pointer",
-                            color: "#1e88e5", 
+                            color: "#1e88e5",
                             "&:hover": {
                               backgroundColor: "#e3f2fd",
                             },
@@ -362,13 +362,14 @@ export default function CommentsModal({ open, onClose, task }: Props) {
                             textAlign: "left",
                             fontSize: "0.875rem",
                             backgroundColor: "white",
-                            color: "black",
+                            color: "red",
                             border: "none",
                             cursor: "pointer",
                             "&:hover": { backgroundColor: "#fee2e2" },
                           }}
                         >
-                          <DeleteIcon fontSize="small" /> Delete
+                          <DeleteIcon fontSize="small" sx={{ color: "red" }} />{" "}
+                          Delete
                         </Box>
                       </Box>
                     )}
