@@ -261,9 +261,22 @@ const TeamPage = () => {
   const team = hasTeam ? teams[0] : null;
 
   console.log("Teams array:", teams);
-console.log("First team:", teams?.[0]);
-  if (!hasFetched) return <div className="p-10"><Loader /></div>;
+  console.log("First team:", teams?.[0]);
 
+  console.log("🔹 hasFetched:", hasFetched);
+  console.log("🔹 teams:", teams);
+  console.log("🔹 hasTeam:", hasTeam);
+
+  if (!hasFetched || !hasTeam) {
+    console.log("⏳ Still loading teams data...");
+    return (
+      <div className="p-10">
+        <Loader />
+      </div>
+    );
+  }
+
+  console.log("✅ Data loaded successfully, rendering sidebar...");
 
   const renderSidebar = (team: Team) => {
     console.log("Team Data:", team);
@@ -387,7 +400,6 @@ console.log("First team:", teams?.[0]);
       </ProtectedRoute>
     );
   };
-
 
   return (
     <ProtectedRoute>
