@@ -387,6 +387,14 @@ console.log("🧩 Navbar Profile Image URL:", profileImageUrl);
                   Dashboard
                 </Link>
               )}
+                   {currentUser?.role === "admin" && (
+                <Link
+                  href="/admin/users"
+                  className="block py-2 px-4 hover:bg-blue-800"
+                >
+                  Users
+                </Link>
+              )}
 
               {/* Notifications */}
               <Link
