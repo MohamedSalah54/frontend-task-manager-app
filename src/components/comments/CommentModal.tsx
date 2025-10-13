@@ -48,8 +48,6 @@ export default function CommentsModal({ open, onClose, task }: Props) {
 
   const currentUser = useAppSelector((state: RootState) => state.auth.user);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
   const fetchComments = async () => {
     try {
       const data = await fetchCommentsByTask(task._id);
@@ -211,7 +209,7 @@ export default function CommentsModal({ open, onClose, task }: Props) {
               <Box
                 key={comment._id}
                 display="flex"
-                flexWrap="wrap" // ✅ يسمح بلف العناصر إذا المساحة ضاقت
+                flexWrap="wrap"
                 gap={2}
                 alignItems="flex-start"
                 sx={{
@@ -220,10 +218,10 @@ export default function CommentsModal({ open, onClose, task }: Props) {
                   borderRadius: 2,
                   backgroundColor: "#f9f9f9",
                   position: "relative",
-                  width: "100%", // ✅ ضمان ملء عرض الحاوية
-                  boxSizing: "border-box", // ✅ عدم الخروج بسبب padding
+                  width: "100%",
+                  boxSizing: "border-box",
                   overflowWrap: "break-word",
-                  wordBreak: "break-word", // ✅ تفادي كسر التنسيق عند كلمات طويلة
+                  wordBreak: "break-word",
                 }}
               >
                 <Box
@@ -299,54 +297,77 @@ export default function CommentsModal({ open, onClose, task }: Props) {
                   )}
                 </Box>
 
-                {isOwner && !isEditing && (
-                  <Box ml={1} position="relative">
-                    <IconButton
-                      onClick={() =>
-                        setMenuOpenId(isMenuOpen ? null : comment._id)
-                      }
-                      sx={{ color: "#555" }}
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
+           {isOwner && !isEditing && (
+  <Box ml={1} position="relative">
+    <IconButton
+      onClick={() => setMenuOpenId(isMenuOpen ? null : comment._id)}
+      sx={{ color: "#555" }}
+    >
+      <MoreVertIcon />
+    </IconButton>
 
-                    {isMenuOpen && (
-                      <Box
-                        ml="auto"
-                        position="relative"
-                        sx={{ flexShrink: 0 }} // ✅ منع التمدد الذي قد يفسد التنسيق
-                      >
-                        <IconButton
-                          onClick={() =>
-                            setMenuOpenId(isMenuOpen ? null : comment._id)
-                          }
-                          sx={{ color: "#555" }}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
+    {isMenuOpen && (
+      <Box
+        sx={{
+          position: "absolute",
+          top: "100%",
+          right: 0,
+          backgroundColor: "white",
+          boxShadow: 3,
+          borderRadius: 1,
+          zIndex: 1000,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 120,
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          component="button"
+          onClick={() => {
+            setEditingCommentId(comment._id);
+            setEditedText(comment.text);
+            setMenuOpenId(null);
+          }}
+          sx={{
+            px: 2,
+            py: 1,
+            textAlign: "left",
+            fontSize: "0.875rem",
+            backgroundColor: "white",
+            border: "none",
+            cursor: "pointer",
+            "&:hover": { backgroundColor: "#f5f5f5" },
+          }}
+        >
+          ✏️ Edit
+        </Box>
 
-                        {isMenuOpen && (
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              top: "100%",
-                              right: 0,
-                              backgroundColor: "white",
-                              boxShadow: 3,
-                              borderRadius: 1,
-                              zIndex: 10,
-                              display: "flex",
-                              flexDirection: "column",
-                              minWidth: 100, // ✅ لتجنب الضيق الشديد على شاشات صغيرة
-                            }}
-                          >
-                            ...
-                          </Box>
-                        )}
-                      </Box>
-                    )}
-                  </Box>
-                )}
+        <Box
+          component="button"
+          onClick={() => {
+            handleDeleteComment(comment._id);
+            setMenuOpenId(null);
+          }}
+          sx={{
+            px: 2,
+            py: 1,
+            textAlign: "left",
+            fontSize: "0.875rem",
+            backgroundColor: "white",
+            color: "red",
+            border: "none",
+            cursor: "pointer",
+            "&:hover": { backgroundColor: "#fee2e2" },
+          }}
+        >
+          🗑️ Delete
+        </Box>
+      </Box>
+    )}
+  </Box>
+)}
+
               </Box>
             );
           })}
