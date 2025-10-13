@@ -262,11 +262,12 @@ const TeamPage = () => {
 
   console.log("Teams array:", teams);
 console.log("First team:", teams?.[0]);
+  if (!hasFetched) return <div className="p-10"><Loader /></div>;
+
 
   const renderSidebar = (team: Team) => {
     console.log("Team Data:", team);
 
-    // دالة لتوليد لينك الصورة بشكل صحيح
     const getImageUrl = (imagePath?: string) => {
       if (!imagePath) return "";
       return imagePath.startsWith("http")
@@ -387,7 +388,6 @@ console.log("First team:", teams?.[0]);
     );
   };
 
-  // if (!hasFetched) return <div className="p-10"><Loader /></div>;
 
   return (
     <ProtectedRoute>
