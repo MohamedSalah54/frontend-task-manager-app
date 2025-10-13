@@ -74,12 +74,13 @@ const DashboardPage = () => {
     return dashboardColors.default;
   };
 
-  const getImageUrl = (image: string) => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
-    return image?.startsWith("http")
-      ? image.replace(/\\/g, "/")
-      : `${baseUrl}/static/${image}`.replace(/\\/g, "/");
-  };
+const getImageUrl = (image: string) => {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL; 
+  return image?.startsWith("http")
+    ? image.replace(/\\/g, "/")
+    : `${baseUrl}/static/${image}`.replace(/\\/g, "/");
+};
+
 
   return (
     <ProtectedRoute>
