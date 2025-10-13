@@ -11,6 +11,8 @@ import {
   Slide,
   SlideProps,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState, forwardRef, ReactElement } from "react";
 import {
@@ -297,77 +299,81 @@ export default function CommentsModal({ open, onClose, task }: Props) {
                   )}
                 </Box>
 
-           {isOwner && !isEditing && (
-  <Box ml={1} position="relative">
-    <IconButton
-      onClick={() => setMenuOpenId(isMenuOpen ? null : comment._id)}
-      sx={{ color: "#555" }}
-    >
-      <MoreVertIcon />
-    </IconButton>
+                {isOwner && !isEditing && (
+                  <Box ml={1} position="relative">
+                    <IconButton
+                      onClick={() =>
+                        setMenuOpenId(isMenuOpen ? null : comment._id)
+                      }
+                      sx={{ color: "#555" }}
+                    >
+                      <MoreVertIcon />
+                    </IconButton>
 
-    {isMenuOpen && (
-      <Box
-        sx={{
-          position: "absolute",
-          top: "100%",
-          right: 0,
-          backgroundColor: "white",
-          boxShadow: 3,
-          borderRadius: 1,
-          zIndex: 1000,
-          display: "flex",
-          flexDirection: "column",
-          minWidth: 120,
-          overflow: "hidden",
-        }}
-      >
-        <Box
-          component="button"
-          onClick={() => {
-            setEditingCommentId(comment._id);
-            setEditedText(comment.text);
-            setMenuOpenId(null);
-          }}
-          sx={{
-            px: 2,
-            py: 1,
-            textAlign: "left",
-            fontSize: "0.875rem",
-            backgroundColor: "white",
-            border: "none",
-            cursor: "pointer",
-            "&:hover": { backgroundColor: "#f5f5f5" },
-          }}
-        >
-          ✏️ Edit
-        </Box>
+                    {isMenuOpen && (
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: "100%",
+                          right: 0,
+                          backgroundColor: "white",
+                          boxShadow: 3,
+                          borderRadius: 1,
+                          zIndex: 1000,
+                          display: "flex",
+                          flexDirection: "column",
+                          minWidth: 120,
+                          overflow: "hidden",
+                        }}
+                      >
+                        <Box
+                          component="button"
+                          onClick={() => {
+                            setEditingCommentId(comment._id);
+                            setEditedText(comment.text);
+                            setMenuOpenId(null);
+                          }}
+                          sx={{
+                            px: 2,
+                            py: 1,
+                            textAlign: "left",
+                            fontSize: "0.875rem",
+                            backgroundColor: "white",
+                            border: "none",
+                            cursor: "pointer",
+                            color: "#1e88e5", 
+                            "&:hover": {
+                              backgroundColor: "#e3f2fd",
+                            },
+                          }}
+                        >
+                          <EditIcon fontSize="small" /> Edit
+                        </Box>
 
-        <Box
-          component="button"
-          onClick={() => {
-            handleDeleteComment(comment._id);
-            setMenuOpenId(null);
-          }}
-          sx={{
-            px: 2,
-            py: 1,
-            textAlign: "left",
-            fontSize: "0.875rem",
-            backgroundColor: "white",
-            color: "red",
-            border: "none",
-            cursor: "pointer",
-            "&:hover": { backgroundColor: "#fee2e2" },
-          }}
-        >
-          🗑️ Delete
-        </Box>
-      </Box>
-    )}
-  </Box>
-)}
-
+                        <Box
+                          component="button"
+                          onClick={() => {
+                            handleDeleteComment(comment._id);
+                            setMenuOpenId(null);
+                          }}
+                          sx={{
+                            px: 2,
+                            py: 1,
+                            textAlign: "left",
+                            fontSize: "0.875rem",
+                            backgroundColor: "white",
+                            color: "black",
+                            border: "none",
+                            cursor: "pointer",
+                            "&:hover": { backgroundColor: "#fee2e2" },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" /> Delete
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
+                )}
               </Box>
             );
           })}
