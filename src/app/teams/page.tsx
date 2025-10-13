@@ -267,14 +267,22 @@ const TeamPage = () => {
   console.log("🔹 teams:", teams);
   console.log("🔹 hasTeam:", hasTeam);
 
-  if (!hasFetched || !hasTeam) {
-    console.log("⏳ Still loading teams data...");
-    return (
-      <div className="p-10">
-        <Loader />
-      </div>
-    );
-  }
+  // if (!hasFetched || !hasTeam) {
+  //   console.log("⏳ Still loading teams data...");
+  //   return (
+  //     <div className="p-10">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
+  if (!hasFetched) {
+  return (
+    <div className="p-10">
+      <Loader />
+    </div>
+  );
+}
+
 
   console.log("✅ Data loaded successfully, rendering sidebar...");
 
