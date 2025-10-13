@@ -2,6 +2,7 @@ import { AppDispatch } from "../redux/store";
 import api from "./api";
 import { setLoading, setError, setUser } from "../redux/userSlice";
 import mongoose from "mongoose";
+import { handleApiError } from "./handleApiError";
 
 
 
@@ -11,7 +12,8 @@ export const fetchAllUsers = () => async (dispatch: AppDispatch) => {
     const response = await api.get("/users");
     dispatch(setUser(response.data));
   } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || "Failed to fetch users"));
+    const message = handleApiError(error);
+    dispatch(setError(message));
   }
 };
 
@@ -46,9 +48,10 @@ export const fetchSearchUsers = (searchQuery: {name: string, email: string, role
     }
 
   } catch (error: any) {
-    console.error("Error while searching:", error);
-    dispatch(setError(error.response?.data?.message || "Failed to search users"));
-  }
+      console.error("Error while searching:", error);
+      const message = handleApiError(error);
+      dispatch(setError(message));
+    }
 };
 
 
@@ -61,8 +64,9 @@ export const updateUser = (id: string, userData: { name: string; email: string; 
     dispatch(setLoading());
     await api.patch(`/users/${id}`, userData); 
     dispatch(fetchAllUsers()); 
-  } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || "Failed to update user"));
+  }  catch (error: any) {
+    const message = handleApiError(error);
+    dispatch(setError(message));
   }
 };
 
@@ -77,7 +81,8 @@ export const deleteUser = (id: string) => async (dispatch: AppDispatch) => {
     await api.delete(`/users/${id}`);
     dispatch(fetchAllUsers());
   } catch (error: any) {
-    dispatch(setError(error.message || "Failed to delete user"));
+    const message = handleApiError(error);
+    dispatch(setError(message));
   }
 };
 
@@ -87,6 +92,7 @@ export const deleteManyUsers = (ids: string[]) => async (dispatch: AppDispatch) 
     await api.delete("/users", { data: { ids } });
     dispatch(fetchAllUsers()); 
   } catch (error: any) {
-    dispatch(setError(error.response?.data?.message || "Failed to delete users"));
+    const message = handleApiError(error);
+    dispatch(setError(message));
   }
 };
